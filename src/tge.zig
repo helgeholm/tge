@@ -91,7 +91,7 @@ pub const Tge = struct {
                 self.tick();
             }
             self.draw();
-            std.Thread.sleep(FPS60 - acc);
+            std.time.sleep(FPS60 - acc);
         }
     }
     pub fn win_resized(self: *Tge) void {
@@ -112,7 +112,7 @@ pub const Tge = struct {
     fn draw(self: *Tge) void {
         self.display.clear();
         const now = std.time.Instant.now() catch unreachable;
-        self.display.print(10, 20, "{d},{d}.{d}", .{ self.ticks, now.timestamp.sec, now.timestamp.nsec });
+        self.display.print(10, 20, "{d},{d}.{d}", .{ self.ticks, now.timestamp.tv_sec, now.timestamp.tv_nsec });
         self.b.draw(&self.display);
         self.c.draw(&self.display);
         self.display.draw();
@@ -152,21 +152,21 @@ const Display = struct {
     }
     fn draw_unready(self: Display) !void {
         try stdout.writeAll("\x1b[1;1H");
-        const mid_y = @divTrunc(self.winsz.row, 2);
-        for (0..mid_y * self.winsz.col) |_| try stdout.writeAll(" ");
+        const mid_y = @divTrunc(self.winsz.ws_row, 2);
+        for (0..mid_y * self.winsz.ws_col) |_| try stdout.writeAll(" ");
         var txtbuf = [_]u8{' '} ** 80;
-        const txt = try std.fmt.bufPrint(&txtbuf, "WIDTH/HEIGHT ({d}/{d}) MUST BE AT LEAST {d}/{d}", .{ self.winsz.col, self.winsz.row, self.width, self.height });
-        const x = if (txt.len > self.winsz.col) 0 else @divTrunc(self.winsz.col - txt.len, 2);
+        const txt = try std.fmt.bufPrint(&txtbuf, "WIDTH/HEIGHT ({d}/{d}) MUST BE AT LEAST {d}/{d}", .{ self.winsz.ws_col, self.winsz.ws_row, self.width, self.height });
+        const x = if (txt.len > self.winsz.ws_col) 0 else @divTrunc(self.winsz.ws_col - txt.len, 2);
         for (0..x) |_| try stdout.writeAll(" ");
         try stdout.writeAll(txt);
-        for (0..self.winsz.col - txt.len - x) |_| try stdout.writeAll(" ");
+        for (0..self.winsz.ws_col - txt.len - x) |_| try stdout.writeAll(" ");
         try std.fmt.format(stdout, "\x1b[{d};1H", .{mid_y + 2});
-        for (0..(self.winsz.row - mid_y - 1) * self.winsz.col) |_| try stdout.writeAll(" ");
+        for (0..(self.winsz.ws_row - mid_y - 1) * self.winsz.ws_col) |_| try stdout.writeAll(" ");
         try stdout.writeAll("\x1b[1;1H");
     }
     pub fn check_ready(self: *Display) void {
         self.read_winsz();
-        self.state = if (self.winsz.row >= self.height and self.winsz.col >= self.width)
+        self.state = if (self.winsz.ws_row >= self.height and self.winsz.ws_col >= self.width)
             .ready
         else
             .unready;
