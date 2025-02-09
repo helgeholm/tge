@@ -24,7 +24,11 @@ const Ball = struct {
     dy: i16 = 1,
     sw: usize,
     sh: usize,
-    pub fn tick(self: *@This()) void {
+    pub fn tick(self: *@This(), keys: *[256]bool) void {
+        if (keys['x']) {
+            self.dx = -self.dx;
+            self.dy = -self.dy;
+        }
         self.x += self.dx;
         if (self.x < 0 or self.x >= self.sw - 7) {
             self.dx = -self.dx;
@@ -51,6 +55,7 @@ const Ball = struct {
 pub const Tge = struct {
     allocator: std.mem.Allocator,
     display: Display,
+    keys: [256]bool = undefined,
     ticks: usize = 0,
     orig_termios: linux.termios,
     b: Ball,
@@ -102,11 +107,13 @@ pub const Tge = struct {
     }
     fn tick(self: *Tge) void {
         if (self.paused()) return;
-        if (stdin.readByte() catch undefined == '0') {
+        @memset(self.keys[0..], false);
+        while (true)
+            self.keys[stdin.readByte() catch break] = true;
+        if (self.keys['0'])
             self.ticks = 0;
-        }
-        self.b.tick();
-        self.c.tick();
+        self.b.tick(&self.keys);
+        self.c.tick(&self.keys);
         self.ticks += 1;
     }
     fn draw(self: *Tge) void {
