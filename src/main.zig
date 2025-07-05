@@ -5,6 +5,35 @@ const Object = @import("Object.zig");
 const Config = @import("Config.zig");
 const Display = @import("Display.zig");
 
+const Background = struct {
+    sw: usize,
+    sh: usize,
+    pub fn init(sw: usize, sh: usize) Background {
+        return .{ .sw = sw, .sh = sh };
+    }
+    pub fn object(self: *Background) Object {
+        return .{
+            .ptr = self,
+            .draw = Background.draw,
+        };
+    }
+    pub fn draw(ptr: *anyopaque, display: *Display) void {
+        const self: *@This() = @ptrCast(@alignCast(ptr));
+        const b: isize = @intCast(self.sh - 1);
+        const r: isize = @intCast(self.sw - 1);
+        for (0..self.sw) |ux| {
+            const x: isize = @intCast(ux);
+            display.put(x, 0, '#');
+            display.put(x, b, '#');
+        }
+        for (1..self.sh - 1) |uy| {
+            const y: isize = @intCast(uy);
+            display.put(0, y, '#');
+            display.put(r, y, '#');
+        }
+    }
+};
+
 const Ball = struct {
     sprite: Sprite = .{
         .data = "" ++
@@ -62,8 +91,10 @@ pub fn main() !void {
     var t = try singleton.init(gpa.allocator(), config);
     defer t.deinit();
 
+    var bg = Background.init(config.width, config.height);
     var b = Ball.init(0, 0, config.width, config.height);
     var c = Ball.init(40, 27, config.width, config.height);
+    t.addObject(bg.object());
     t.addObject(b.object());
     t.addObject(c.object());
 

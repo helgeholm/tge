@@ -64,6 +64,13 @@ pub fn check_ready(self: *@This()) void {
         .unready;
 }
 
+pub inline fn put(self: *@This(), x: isize, y: isize, c: u8) void {
+    if (y < 0 or y >= self.height) return;
+    if (x < 0 or x >= self.width) return;
+    const tpos: usize = @intCast(@as(isize, @intCast(self.width)) * y + x);
+    self.data[tpos] = c;
+}
+
 pub fn blot(self: *@This(), sprite: *const Sprite) void {
     const x = sprite.x;
     const y = sprite.y;
