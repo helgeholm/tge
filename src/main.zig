@@ -3,6 +3,7 @@ const singleton = @import("singleton.zig");
 const Sprite = @import("Sprite.zig");
 const Object = @import("Object.zig");
 const Config = @import("Config.zig");
+const Display = @import("Display.zig");
 
 const Ball = struct {
     sprite: Sprite = .{
@@ -25,9 +26,13 @@ const Ball = struct {
     pub fn object(self: *Ball) Object {
         return .{
             .ptr = self,
-            .sprite = &self.sprite,
             .tick = Ball.tick,
+            .draw = Ball.draw,
         };
+    }
+    pub fn draw(ptr: *anyopaque, display: *Display) void {
+        var self: *@This() = @ptrCast(@alignCast(ptr));
+        display.blot(&self.sprite);
     }
     pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
         var self: *@This() = @ptrCast(@alignCast(ptr));

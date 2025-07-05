@@ -1,5 +1,5 @@
-const Sprite = @import("Sprite.zig");
+const Display = @import("Display.zig");
 
 ptr: *anyopaque,
-sprite: ?*Sprite = null,
+draw: *const fn (ptr: *anyopaque, display: *Display) void,
 tick: *const fn (ptr: *anyopaque, keys: *[256]bool) void,

@@ -87,9 +87,7 @@ fn draw(self: *@This()) void {
     const now = std.time.Instant.now() catch unreachable;
     self.display.print(10, 20, "{d},{d}.{d}", .{ self.ticks, now.timestamp.sec, now.timestamp.nsec });
     for (self.objects.items) |o| {
-        if (o.sprite) |s| {
-            self.display.blot(s);
-        }
+        o.draw(o.ptr, &self.display);
     }
     self.display.draw();
 }
