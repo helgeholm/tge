@@ -27,13 +27,13 @@ pub fn main() !void {
         .mask = std.posix.empty_sigset,
         .flags = 0,
     };
-    try std.posix.sigaction(std.posix.SIG.WINCH, &winch_action, null);
+    std.posix.sigaction(std.posix.SIG.WINCH, &winch_action, null);
     const int_action = std.posix.Sigaction{
         .handler = .{ .handler = exit_handler },
         .mask = std.posix.empty_sigset,
         .flags = 0,
     };
-    try std.posix.sigaction(std.posix.SIG.INT, &int_action, null);
+    std.posix.sigaction(std.posix.SIG.INT, &int_action, null);
     try t.run();
     std.debug.print("All your {} are belong to us.\n", .{t});
 }
