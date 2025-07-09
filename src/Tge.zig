@@ -31,6 +31,21 @@ pub fn init(allocator: std.mem.Allocator, config: Config) !@This() {
     };
 }
 
+pub fn obj(clientObjectPtr: anytype) Object {
+    const O = @typeInfo(@TypeOf(clientObjectPtr)).pointer.child;
+    return if (std.meta.hasMethod(O, "draw"))
+        .{
+            .ptr = clientObjectPtr,
+            .tick = O.tick,
+            .draw = O.draw,
+        }
+    else
+        .{
+            .ptr = clientObjectPtr,
+            .tick = O.tick,
+        };
+}
+
 pub fn deinit(self: *@This()) void {
     self.objects.deinit();
     self.display.deinit(self.allocator);

@@ -5,22 +5,20 @@ const Sprite = @import("Sprite.zig");
 const Object = @import("Object.zig");
 const Config = @import("Config.zig");
 const Display = @import("Display.zig");
+const obj = @import("Tge.zig").obj;
 
 const GameLogic = struct {
     car: *Car,
     meters: f32 = 0,
-    pub fn object(self: *GameLogic) Object {
-        return .{
-            .ptr = self,
-            .draw = GameLogic.draw,
-            .tick = GameLogic.tick,
-        };
-    }
     pub fn draw(ptr: *anyopaque, display: *Display) void {
         const self: *@This() = @ptrCast(@alignCast(ptr));
         var txt_buf: [32]u8 = undefined;
         const txt = std.fmt.bufPrint(&txt_buf, "Meters travelled: {d:.1}", .{self.meters}) catch unreachable;
         display.text(2, 18, txt);
+        if (self.car.driving)
+            display.text(2, 2, "SPACE - stop car")
+        else
+            display.text(2, 2, "SPACE - start car");
     }
     pub fn tick(ptr: *anyopaque, _: *[256]bool) void {
         const self: *@This() = @ptrCast(@alignCast(ptr));
@@ -44,13 +42,6 @@ const Background = struct {
     ground1: []const u8 = "=----=-------~~~---=------##------=-------------==----- -----#--",
     ground_i: usize = 0,
     ground_i_frac: u16 = 0,
-    pub fn object(self: *Background) Object {
-        return .{
-            .ptr = self,
-            .draw = Background.draw,
-            .tick = Background.tick,
-        };
-    }
     pub fn draw(ptr: *anyopaque, display: *Display) void {
         const self: *@This() = @ptrCast(@alignCast(ptr));
         // horizon
@@ -121,13 +112,6 @@ const Car = struct {
     frame: usize = 0,
     anim_dur: usize = 0,
     driving: bool = true,
-    pub fn object(self: *Car) Object {
-        return .{
-            .ptr = self,
-            .tick = Car.tick,
-            .draw = Car.draw,
-        };
-    }
     pub fn draw(ptr: *anyopaque, display: *Display) void {
         var self: *@This() = @ptrCast(@alignCast(ptr));
         if (self.driving)
@@ -163,9 +147,9 @@ pub fn main() !void {
     var car = Car{};
     var bg = Background{ .sw = config.width, .sh = config.height, .car = &car };
     var gl = GameLogic{ .car = &car };
-    t.addObject(bg.object());
-    t.addObject(car.object());
-    t.addObject(gl.object());
+    t.addObject(obj(&bg));
+    t.addObject(obj(&car));
+    t.addObject(obj(&gl));
 
     try t.run();
 }
