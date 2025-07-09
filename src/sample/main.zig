@@ -1,10 +1,9 @@
 const std = @import("std");
 const linux = std.os.linux;
-const singleton = @import("singleton.zig");
-const Sprite = @import("Sprite.zig");
-const Object = @import("Object.zig");
-const Config = @import("Config.zig");
-const Display = @import("Display.zig");
+const tge = @import("tge");
+const Sprite = tge.Sprite;
+const Config = tge.Config;
+const Display = tge.Display;
 
 const GameLogic = struct {
     car: *Car,
@@ -167,7 +166,7 @@ pub fn main() !void {
         std.log.err("Memory leak detected on exit", .{});
 
     const config = Config{ .width = 100, .height = 40 };
-    var t = try singleton.init(gpa.allocator(), config);
+    var t = try tge.singleton.init(gpa.allocator(), config);
     defer t.deinit();
 
     var rng = std.Random.Pcg.init(1);
