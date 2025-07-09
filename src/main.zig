@@ -1,4 +1,5 @@
 const std = @import("std");
+const linux = std.os.linux;
 const singleton = @import("singleton.zig");
 const Sprite = @import("Sprite.zig");
 const Object = @import("Object.zig");
@@ -8,6 +9,17 @@ const Display = @import("Display.zig");
 const Background = struct {
     sw: usize,
     sh: usize,
+    mountains: Sprite = .{
+        .data = @embedFile("sprites/horizon"),
+        .x = 0,
+        .y = 8,
+        .width = 61,
+    },
+    mountains_x_frac: u16 = 0,
+    ground0: []const u8 = "_ _________._______________ _____________.______________________",
+    ground1: []const u8 = "=----=-------~~~---=------##------=-------------==----- -----#--",
+    ground_i: usize = 0,
+    ground_i_frac: u16 = 0,
     pub fn init(sw: usize, sh: usize) Background {
         return .{ .sw = sw, .sh = sh };
     }
@@ -15,10 +27,19 @@ const Background = struct {
         return .{
             .ptr = self,
             .draw = Background.draw,
+            .tick = Background.tick,
         };
     }
     pub fn draw(ptr: *anyopaque, display: *Display) void {
         const self: *@This() = @ptrCast(@alignCast(ptr));
+        // horizon
+        display.blot(&self.mountains);
+        self.mountains.x += 60;
+        display.blot(&self.mountains);
+        self.mountains.x += 60;
+        display.blot(&self.mountains);
+        self.mountains.x -= 120;
+        // frame
         const b: isize = @intCast(self.sh - 1);
         const r: isize = @intCast(self.sw - 1);
         for (0..self.sw) |ux| {
@@ -31,58 +52,71 @@ const Background = struct {
             display.put(0, y, '#');
             display.put(r, y, '#');
         }
+        // ground
+        for (1..self.sw - 1) |ug| {
+            const gp = @mod(self.ground_i + ug, self.ground0.len);
+            const g: isize = @intCast(ug);
+            display.put(g, 15, self.ground0[gp]);
+            display.put(g, 16, self.ground1[gp]);
+        }
+    }
+    pub fn tick(ptr: *anyopaque, _: *[256]bool) void {
+        const self: *@This() = @ptrCast(@alignCast(ptr));
+        self.ground_i_frac += 1;
+        if (self.ground_i_frac > 8) {
+            self.ground_i += 1;
+            self.ground_i_frac = 0;
+        }
+        self.mountains_x_frac += 1;
+        if (self.mountains_x_frac > 40) {
+            self.mountains_x_frac = 0;
+            self.mountains.x -= 1;
+            if (self.mountains.x < -60) {
+                self.mountains.x = 0;
+            }
+        }
     }
 };
 
-const Ball = struct {
-    sprite: Sprite = .{
-        .data = "" ++
-            " ,----, " ++
-            "| BALL |" ++
-            " '----' ",
-        .width = 8,
-    },
-    dx: i16 = 1,
-    dy: i16 = 1,
-    sw: usize,
-    sh: usize,
-    pub fn init(x: i16, y: i16, sw: usize, sh: usize) Ball {
-        var b = Ball{ .sw = sw, .sh = sh };
-        b.sprite.x = x;
-        b.sprite.y = y;
-        return b;
-    }
-    pub fn object(self: *Ball) Object {
+const Car = struct {
+    frames: [2]Sprite = .{ .{
+        .data = @embedFile("sprites/car1"),
+        .x = 20,
+        .y = 13,
+        .width = 12,
+    }, .{
+        .data = @embedFile("sprites/car2"),
+        .x = 20,
+        .y = 13,
+        .width = 12,
+    } },
+    frame: usize = 0,
+    anim_dur: usize = 0,
+    pub fn object(self: *Car) Object {
         return .{
             .ptr = self,
-            .tick = Ball.tick,
-            .draw = Ball.draw,
+            .tick = Car.tick,
+            .draw = Car.draw,
         };
     }
     pub fn draw(ptr: *anyopaque, display: *Display) void {
         var self: *@This() = @ptrCast(@alignCast(ptr));
-        display.blot(&self.sprite);
+        display.blot(&self.frames[self.frame]);
     }
-    pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
+    pub fn tick(ptr: *anyopaque, _: *[256]bool) void {
         var self: *@This() = @ptrCast(@alignCast(ptr));
-        if (keys['x']) {
-            self.dx = -self.dx;
-            self.dy = -self.dy;
+        if (self.anim_dur == 0) {
+            self.anim_dur = 30;
+            self.frame = @mod(self.frame + 1, self.frames.len);
         }
-        self.sprite.x += self.dx;
-        if (self.sprite.x < 0 or self.sprite.x >= self.sw - 7) {
-            self.dx = -self.dx;
-            self.sprite.x += 2 * self.dx;
-        }
-        self.sprite.y += self.dy;
-        if (self.sprite.y < 0 or self.sprite.y >= self.sh - 2) {
-            self.dy = -self.dy;
-            self.sprite.y += 2 * self.dy;
-        }
+        self.anim_dur -= 1;
     }
 };
 
 pub fn main() !void {
+    // only needed when Tge crashes too hard for recovery
+    uninit();
+
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer if (gpa.deinit() == .leak)
         std.log.err("Memory leak detected on exit", .{});
@@ -92,11 +126,18 @@ pub fn main() !void {
     defer t.deinit();
 
     var bg = Background.init(config.width, config.height);
-    var b = Ball.init(0, 0, config.width, config.height);
-    var c = Ball.init(40, 27, config.width, config.height);
+    var car = Car{};
     t.addObject(bg.object());
-    t.addObject(b.object());
-    t.addObject(c.object());
+    t.addObject(car.object());
 
     try t.run();
+}
+
+pub fn uninit() void {
+    var termios: linux.termios = undefined;
+    if (linux.tcgetattr(0, &termios) != 0) @panic("termios read");
+    termios.lflag.ICANON = true;
+    termios.lflag.ECHO = true;
+    termios.cc[@intFromEnum(linux.V.MIN)] = 1;
+    if (linux.tcsetattr(0, linux.TCSA.NOW, &termios) != 0) @panic("termios write");
 }

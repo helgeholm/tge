@@ -82,6 +82,7 @@ pub fn blot(self: *@This(), sprite: *const Sprite) void {
             if (tx < 0 or tx >= self.width) continue;
             const spos: usize = @as(usize, @intCast(sprite.width)) * sy + sx;
             const tpos: usize = @intCast(@as(isize, @intCast(self.width)) * ty + tx);
+            if (sprite.data[spos] < 32) continue;
             self.data[tpos] = sprite.data[spos];
         }
     }
