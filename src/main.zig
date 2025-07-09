@@ -5,7 +5,6 @@ const Sprite = @import("Sprite.zig");
 const Object = @import("Object.zig");
 const Config = @import("Config.zig");
 const Display = @import("Display.zig");
-const obj = @import("Tge.zig").obj;
 
 const GameLogic = struct {
     car: *Car,
@@ -24,6 +23,33 @@ const GameLogic = struct {
         const self: *@This() = @ptrCast(@alignCast(ptr));
         if (self.car.driving)
             self.meters += 0.1;
+    }
+};
+
+const Treasure = struct {
+    exist: bool = false,
+    sprite: Sprite = .{
+        .data = "[*]",
+        .x = -100,
+        .y = -100,
+        .width = 3,
+    },
+    random: std.Random,
+    pub fn tick(ptr: *anyopaque, _: *[256]bool) void {
+        const self: *@This() = @ptrCast(@alignCast(ptr));
+        if (self.sprite.x < -5)
+            self.exist = false;
+        if (!self.exist) {
+            self.exist = true;
+            self.sprite.y = self.random.intRangeAtMost(i16, 20, 39);
+            self.sprite.x = self.random.intRangeAtMost(i16, 100, 400);
+        }
+        self.sprite.x -= 1;
+    }
+    pub fn draw(ptr: *anyopaque, display: *Display) void {
+        const self: *@This() = @ptrCast(@alignCast(ptr));
+        if (!self.exist) return;
+        display.blot(&self.sprite);
     }
 };
 
@@ -144,12 +170,16 @@ pub fn main() !void {
     var t = try singleton.init(gpa.allocator(), config);
     defer t.deinit();
 
+    var rng = std.Random.Pcg.init(1);
+
     var car = Car{};
     var bg = Background{ .sw = config.width, .sh = config.height, .car = &car };
     var gl = GameLogic{ .car = &car };
-    t.addObject(obj(&bg));
-    t.addObject(obj(&car));
-    t.addObject(obj(&gl));
+    var treasure = Treasure{ .random = rng.random() };
+    t.addAsObject(&bg);
+    t.addAsObject(&car);
+    t.addAsObject(&treasure);
+    t.addAsObject(&gl);
 
     try t.run();
 }

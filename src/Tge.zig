@@ -31,7 +31,7 @@ pub fn init(allocator: std.mem.Allocator, config: Config) !@This() {
     };
 }
 
-pub fn obj(clientObjectPtr: anytype) Object {
+fn obj(clientObjectPtr: anytype) Object {
     const O = @typeInfo(@TypeOf(clientObjectPtr)).pointer.child;
     return if (std.meta.hasMethod(O, "draw"))
         .{
@@ -81,6 +81,10 @@ pub fn run(self: *@This()) !void {
 
 pub fn win_resized(self: *@This()) void {
     self.display.check_ready();
+}
+
+pub fn addAsObject(self: *@This(), clientObjectPtr: anytype) void {
+    self.addObject(obj(clientObjectPtr));
 }
 
 pub fn addObject(self: *@This(), o: Object) void {
