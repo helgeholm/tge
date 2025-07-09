@@ -35,6 +35,14 @@ pub fn deinit(self: *@This()) void {
     self.objects.deinit();
     self.display.deinit(self.allocator);
     _ = linux.tcsetattr(0, linux.TCSA.NOW, &self.orig_termios);
+    // Used to recover from a hard crash where deinit didn't run
+    // var termios: linux.termios = undefined;
+    // if (linux.tcgetattr(0, &termios) != 0) @panic("termios read");
+    // termios.lflag.ICANON = true;
+    // termios.lflag.ECHO = true;
+    // termios.cc[@intFromEnum(linux.V.TIME)] = 0;
+    // termios.cc[@intFromEnum(linux.V.MIN)] = 1;
+    // if (linux.tcsetattr(0, linux.TCSA.NOW, &termios) != 0) @panic("termios write");
 }
 
 pub fn run(self: *@This()) !void {
@@ -49,7 +57,7 @@ pub fn run(self: *@This()) !void {
         acc = @min(delta + acc, FPS60 * 2);
         while (acc > FPS60) {
             acc -= FPS60;
-            self.tick();
+            if (self.tick()) return;
         }
         self.draw();
         std.time.sleep(FPS60 - acc);
@@ -69,23 +77,22 @@ fn paused(self: @This()) bool {
     return (self.display.state == .unready);
 }
 
-fn tick(self: *@This()) void {
-    if (self.paused()) return;
+fn tick(self: *@This()) bool {
+    if (self.paused()) return false;
     @memset(self.keys[0..], false);
     while (true)
         self.keys[stdin.readByte() catch break] = true;
-    if (self.keys['0'])
-        self.ticks = 0;
+    if (self.keys['q'])
+        return true;
     for (self.objects.items) |o| {
         o.tick(o.ptr, &self.keys);
     }
     self.ticks += 1;
+    return false;
 }
 
 fn draw(self: *@This()) void {
     self.display.clear();
-    const now = std.time.Instant.now() catch unreachable;
-    self.display.print(10, 20, "{d},{d}.{d}", .{ self.ticks, now.timestamp.sec, now.timestamp.nsec });
     for (self.objects.items) |o| {
         o.draw(o.ptr, &self.display);
     }

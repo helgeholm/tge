@@ -64,6 +64,15 @@ pub fn check_ready(self: *@This()) void {
         .unready;
 }
 
+pub inline fn text(self: *@This(), x: isize, y: isize, txt: []const u8) void {
+    if (y < 0 or y >= self.height) return;
+    const txtStart = @max(0, -x);
+    const txtEnd = @min(txt.len, self.width - x);
+    if (txtEnd <= txtStart) return;
+    const tpos: usize = @intCast(@as(isize, @intCast(self.width)) * y + x);
+    @memcpy(self.data[tpos .. tpos + txtEnd - txtStart], txt[txtStart..txtEnd]);
+}
+
 pub inline fn put(self: *@This(), x: isize, y: isize, c: u8) void {
     if (y < 0 or y >= self.height) return;
     if (x < 0 or x >= self.width) return;

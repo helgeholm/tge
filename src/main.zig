@@ -6,9 +6,33 @@ const Object = @import("Object.zig");
 const Config = @import("Config.zig");
 const Display = @import("Display.zig");
 
+const GameLogic = struct {
+    car: *Car,
+    meters: f32 = 0,
+    pub fn object(self: *GameLogic) Object {
+        return .{
+            .ptr = self,
+            .draw = GameLogic.draw,
+            .tick = GameLogic.tick,
+        };
+    }
+    pub fn draw(ptr: *anyopaque, display: *Display) void {
+        const self: *@This() = @ptrCast(@alignCast(ptr));
+        var txt_buf: [32]u8 = undefined;
+        const txt = std.fmt.bufPrint(&txt_buf, "Meters travelled: {d:.1}", .{self.meters}) catch unreachable;
+        display.text(2, 18, txt);
+    }
+    pub fn tick(ptr: *anyopaque, _: *[256]bool) void {
+        const self: *@This() = @ptrCast(@alignCast(ptr));
+        if (self.car.driving)
+            self.meters += 0.1;
+    }
+};
+
 const Background = struct {
     sw: usize,
     sh: usize,
+    car: *Car,
     mountains: Sprite = .{
         .data = @embedFile("sprites/horizon"),
         .x = 0,
@@ -20,9 +44,6 @@ const Background = struct {
     ground1: []const u8 = "=----=-------~~~---=------##------=-------------==----- -----#--",
     ground_i: usize = 0,
     ground_i_frac: u16 = 0,
-    pub fn init(sw: usize, sh: usize) Background {
-        return .{ .sw = sw, .sh = sh };
-    }
     pub fn object(self: *Background) Object {
         return .{
             .ptr = self,
@@ -62,6 +83,7 @@ const Background = struct {
     }
     pub fn tick(ptr: *anyopaque, _: *[256]bool) void {
         const self: *@This() = @ptrCast(@alignCast(ptr));
+        if (!self.car.driving) return;
         self.ground_i_frac += 1;
         if (self.ground_i_frac > 8) {
             self.ground_i += 1;
@@ -90,8 +112,15 @@ const Car = struct {
         .y = 13,
         .width = 12,
     } },
+    parked: Sprite = .{
+        .data = @embedFile("sprites/car0"),
+        .x = 20,
+        .y = 13,
+        .width = 12,
+    },
     frame: usize = 0,
     anim_dur: usize = 0,
+    driving: bool = true,
     pub fn object(self: *Car) Object {
         return .{
             .ptr = self,
@@ -101,22 +130,28 @@ const Car = struct {
     }
     pub fn draw(ptr: *anyopaque, display: *Display) void {
         var self: *@This() = @ptrCast(@alignCast(ptr));
-        display.blot(&self.frames[self.frame]);
+        if (self.driving)
+            display.blot(&self.frames[self.frame])
+        else
+            display.blot(&self.parked);
     }
-    pub fn tick(ptr: *anyopaque, _: *[256]bool) void {
+    pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
         var self: *@This() = @ptrCast(@alignCast(ptr));
-        if (self.anim_dur == 0) {
-            self.anim_dur = 30;
-            self.frame = @mod(self.frame + 1, self.frames.len);
+        if (keys[' ']) {
+            self.driving = !self.driving;
+            self.anim_dur = 0;
         }
-        self.anim_dur -= 1;
+        if (self.driving) {
+            if (self.anim_dur == 0) {
+                self.anim_dur = 30;
+                self.frame = @mod(self.frame + 1, self.frames.len);
+            }
+            self.anim_dur -= 1;
+        }
     }
 };
 
 pub fn main() !void {
-    // only needed when Tge crashes too hard for recovery
-    uninit();
-
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer if (gpa.deinit() == .leak)
         std.log.err("Memory leak detected on exit", .{});
@@ -125,19 +160,12 @@ pub fn main() !void {
     var t = try singleton.init(gpa.allocator(), config);
     defer t.deinit();
 
-    var bg = Background.init(config.width, config.height);
     var car = Car{};
+    var bg = Background{ .sw = config.width, .sh = config.height, .car = &car };
+    var gl = GameLogic{ .car = &car };
     t.addObject(bg.object());
     t.addObject(car.object());
+    t.addObject(gl.object());
 
     try t.run();
-}
-
-pub fn uninit() void {
-    var termios: linux.termios = undefined;
-    if (linux.tcgetattr(0, &termios) != 0) @panic("termios read");
-    termios.lflag.ICANON = true;
-    termios.lflag.ECHO = true;
-    termios.cc[@intFromEnum(linux.V.MIN)] = 1;
-    if (linux.tcsetattr(0, linux.TCSA.NOW, &termios) != 0) @panic("termios write");
 }
