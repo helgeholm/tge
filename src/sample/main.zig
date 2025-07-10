@@ -27,6 +27,8 @@ const GameLogic = struct {
 
 const Treasure = struct {
     exist: bool = false,
+    pos: i16 = -100,
+    car: *Car,
     sprite: Sprite = .{
         .data = "[*]",
         .x = -100,
@@ -65,17 +67,16 @@ const Background = struct {
     mountains_x_frac: u16 = 0,
     ground0: []const u8 = "_ _________._______________ _____________.______________________",
     ground1: []const u8 = "=----=-------~~~---=------##------=-------------==----- -----#--",
-    ground_i: usize = 0,
-    ground_i_frac: u16 = 0,
     pub fn draw(ptr: *anyopaque, display: *Display) void {
         const self: *@This() = @ptrCast(@alignCast(ptr));
+        const local_x: usize = @intFromFloat(self.car.pos_x);
         // horizon
+        self.mountains.x = 0 - @as(i16, @intCast(@mod(@divTrunc(local_x, 10), 60)));
         display.blot(&self.mountains);
         self.mountains.x += 60;
         display.blot(&self.mountains);
         self.mountains.x += 60;
         display.blot(&self.mountains);
-        self.mountains.x -= 120;
         // frame
         const b: isize = @intCast(self.sh - 1);
         const r: isize = @intCast(self.sw - 1);
@@ -90,8 +91,9 @@ const Background = struct {
             display.put(r, y, '#');
         }
         // ground
+        const ground_i: usize = @mod(local_x, self.ground0.len);
         for (1..self.sw - 1) |ug| {
-            const gp = @mod(self.ground_i + ug, self.ground0.len);
+            const gp = @mod(ground_i + ug, self.ground0.len);
             const g: isize = @intCast(ug);
             display.put(g, 15, self.ground0[gp]);
             display.put(g, 16, self.ground1[gp]);
@@ -100,11 +102,6 @@ const Background = struct {
     pub fn tick(ptr: *anyopaque, _: *[256]bool) void {
         const self: *@This() = @ptrCast(@alignCast(ptr));
         if (!self.car.driving) return;
-        self.ground_i_frac += 1;
-        if (self.ground_i_frac > 8) {
-            self.ground_i += 1;
-            self.ground_i_frac = 0;
-        }
         self.mountains_x_frac += 1;
         if (self.mountains_x_frac > 40) {
             self.mountains_x_frac = 0;
@@ -137,6 +134,7 @@ const Car = struct {
     frame: usize = 0,
     anim_dur: usize = 0,
     driving: bool = true,
+    pos_x: f32 = 0,
     pub fn draw(ptr: *anyopaque, display: *Display) void {
         var self: *@This() = @ptrCast(@alignCast(ptr));
         if (self.driving)
@@ -156,6 +154,7 @@ const Car = struct {
                 self.frame = @mod(self.frame + 1, self.frames.len);
             }
             self.anim_dur -= 1;
+            self.pos_x += 0.1;
         }
     }
 };
@@ -174,7 +173,7 @@ pub fn main() !void {
     var car = Car{};
     var bg = Background{ .sw = config.width, .sh = config.height, .car = &car };
     var gl = GameLogic{ .car = &car };
-    var treasure = Treasure{ .random = rng.random() };
+    var treasure = Treasure{ .car = &car, .random = rng.random() };
     t.addAsObject(&bg);
     t.addAsObject(&car);
     t.addAsObject(&treasure);
