@@ -29,9 +29,9 @@ pub fn deinit(self: *@This(), allocator: std.mem.Allocator) void {
 }
 
 fn read_winsz(self: *@This()) void {
-    const rv = std.os.linux.ioctl(
+    const rv = std.posix.system.ioctl(
         stdout.context.handle,
-        std.os.linux.T.IOCGWINSZ,
+        std.posix.system.T.IOCGWINSZ,
         @intFromPtr(&self.winsz),
     );
     if (rv != 0) @panic("IOCTL TIOCGWINSZ failed (can't read terminal size)");

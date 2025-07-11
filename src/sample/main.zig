@@ -1,5 +1,4 @@
 const std = @import("std");
-const linux = std.os.linux;
 const tge = @import("tge");
 const Sprite = tge.Sprite;
 const Config = tge.Config;
@@ -7,27 +6,30 @@ const Display = tge.Display;
 
 const GameLogic = struct {
     car: *Car,
-    meters: f32 = 0,
+    treasure: *Treasure,
     pub fn draw(ptr: *anyopaque, display: *Display) void {
         const self: *@This() = @ptrCast(@alignCast(ptr));
         var txt_buf: [32]u8 = undefined;
-        const txt = std.fmt.bufPrint(&txt_buf, "Meters travelled: {d:.1}", .{self.meters}) catch unreachable;
-        display.text(2, 18, txt);
-        if (self.car.driving)
-            display.text(2, 2, "SPACE - stop car")
-        else
+        const txt = std.fmt.bufPrint(&txt_buf, "Meters travelled: {d:.1}", .{self.car.pos_x}) catch unreachable;
+        display.text(2, 38, txt);
+        if (self.car.driving) {
+            display.text(2, 2, "SPACE - stop car");
+        } else {
             display.text(2, 2, "SPACE - start car");
+            const car_x: i32 = @intFromFloat(self.car.pos_x);
+            const tdist = @abs(car_x - self.treasure.pos);
+            if (tdist < 3)
+                display.text(2, 3, "G     - grab treasure");
+        }
     }
-    pub fn tick(ptr: *anyopaque, _: *[256]bool) void {
-        const self: *@This() = @ptrCast(@alignCast(ptr));
-        if (self.car.driving)
-            self.meters += 0.1;
+    pub fn tick(_: *anyopaque, _: *[256]bool) void {
+        //const self: *@This() = @ptrCast(@alignCast(ptr));
     }
 };
 
 const Treasure = struct {
     exist: bool = false,
-    pos: i16 = -100,
+    pos: i32 = -100,
     car: *Car,
     sprite: Sprite = .{
         .data = "[*]",
@@ -38,14 +40,15 @@ const Treasure = struct {
     random: std.Random,
     pub fn tick(ptr: *anyopaque, _: *[256]bool) void {
         const self: *@This() = @ptrCast(@alignCast(ptr));
-        if (self.sprite.x < -5)
+        const car_x: i32 = @intFromFloat(self.car.pos_x);
+        if (car_x - self.pos > 50)
             self.exist = false;
         if (!self.exist) {
             self.exist = true;
-            self.sprite.y = self.random.intRangeAtMost(i16, 20, 39);
-            self.sprite.x = self.random.intRangeAtMost(i16, 100, 400);
+            self.sprite.y = self.random.intRangeAtMost(i16, 20, 37);
+            self.pos = car_x + self.random.intRangeAtMost(i16, 60, 100);
         }
-        self.sprite.x -= 1;
+        self.sprite.x = @intCast(25 + self.pos - car_x);
     }
     pub fn draw(ptr: *anyopaque, display: *Display) void {
         const self: *@This() = @ptrCast(@alignCast(ptr));
@@ -172,8 +175,8 @@ pub fn main() !void {
 
     var car = Car{};
     var bg = Background{ .sw = config.width, .sh = config.height, .car = &car };
-    var gl = GameLogic{ .car = &car };
     var treasure = Treasure{ .car = &car, .random = rng.random() };
+    var gl = GameLogic{ .car = &car, .treasure = &treasure };
     t.addAsObject(&bg);
     t.addAsObject(&car);
     t.addAsObject(&treasure);

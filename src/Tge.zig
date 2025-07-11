@@ -1,5 +1,5 @@
 const std = @import("std");
-const linux = std.os.linux;
+const posix = std.posix;
 
 const Config = @import("Config.zig");
 const Display = @import("Display.zig");
@@ -11,18 +11,17 @@ allocator: std.mem.Allocator,
 display: Display,
 keys: [256]bool = undefined,
 ticks: usize = 0,
-orig_termios: linux.termios,
+orig_termios: posix.termios,
 objects: std.ArrayList(Object),
 
 pub fn init(allocator: std.mem.Allocator, config: Config) !@This() {
-    var termios: linux.termios = undefined;
-    if (linux.tcgetattr(0, &termios) != 0) @panic("termios read");
+    const termios = posix.tcgetattr(0) catch @panic("can't read std.posix.termios - mebbe we not a posix 'puter");
     var new_termios = termios;
     new_termios.lflag.ICANON = false;
     new_termios.lflag.ECHO = false;
-    new_termios.cc[@intFromEnum(linux.V.TIME)] = 0;
-    new_termios.cc[@intFromEnum(linux.V.MIN)] = 0;
-    if (linux.tcsetattr(0, linux.TCSA.NOW, &new_termios) != 0) @panic("termios write");
+    new_termios.cc[@intFromEnum(posix.V.TIME)] = 0;
+    new_termios.cc[@intFromEnum(posix.V.MIN)] = 0;
+    posix.tcsetattr(0, posix.TCSA.NOW, new_termios) catch unreachable;
     return .{
         .allocator = allocator,
         .orig_termios = termios,
@@ -49,15 +48,7 @@ fn obj(clientObjectPtr: anytype) Object {
 pub fn deinit(self: *@This()) void {
     self.objects.deinit();
     self.display.deinit(self.allocator);
-    _ = linux.tcsetattr(0, linux.TCSA.NOW, &self.orig_termios);
-    // Used to recover from a hard crash where deinit didn't run
-    // var termios: linux.termios = undefined;
-    // if (linux.tcgetattr(0, &termios) != 0) @panic("termios read");
-    // termios.lflag.ICANON = true;
-    // termios.lflag.ECHO = true;
-    // termios.cc[@intFromEnum(linux.V.TIME)] = 0;
-    // termios.cc[@intFromEnum(linux.V.MIN)] = 1;
-    // if (linux.tcsetattr(0, linux.TCSA.NOW, &termios) != 0) @panic("termios write");
+    posix.tcsetattr(0, posix.TCSA.NOW, self.orig_termios) catch unreachable;
 }
 
 pub fn run(self: *@This()) !void {
