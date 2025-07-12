@@ -11,7 +11,7 @@ pub fn build(b: *std.Build) void {
     });
 
     const exe_mod = b.createModule(.{
-        .root_source_file = b.path("src/sample/main.zig"),
+        .root_source_file = b.path("src/sample-scoundrel/main.zig"),
         .target = target,
         .optimize = optimize,
     });

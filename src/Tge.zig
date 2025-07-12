@@ -33,11 +33,17 @@ pub fn init(allocator: std.mem.Allocator, config: Config) !@This() {
 fn obj(clientObjectPtr: anytype) Object {
     const O = @typeInfo(@TypeOf(clientObjectPtr)).pointer.child;
     return if (std.meta.hasMethod(O, "draw"))
-        .{
-            .ptr = clientObjectPtr,
-            .tick = O.tick,
-            .draw = O.draw,
-        }
+        if (std.meta.hasMethod(O, "tick"))
+            .{
+                .ptr = clientObjectPtr,
+                .tick = O.tick,
+                .draw = O.draw,
+            }
+        else
+            .{
+                .ptr = clientObjectPtr,
+                .draw = O.draw,
+            }
     else
         .{
             .ptr = clientObjectPtr,

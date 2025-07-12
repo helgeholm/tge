@@ -80,9 +80,7 @@ pub inline fn put(self: *@This(), x: isize, y: isize, c: u8) void {
     self.data[tpos] = c;
 }
 
-pub fn blot(self: *@This(), sprite: *const Sprite) void {
-    const x = sprite.x;
-    const y = sprite.y;
+pub fn blot(self: *@This(), sprite: *const Sprite, x: i16, y: i16) void {
     for (0..sprite.height()) |sy| {
         const ty = y + @as(isize, @intCast(sy));
         if (ty < 0 or ty >= self.height) continue;
