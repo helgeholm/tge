@@ -6,8 +6,8 @@ const DisplayState = enum { unready, ready };
 
 const stdout = std.io.getStdOut().writer();
 
-width: usize,
-height: usize,
+width: isize,
+height: isize,
 state: DisplayState = .unready,
 winsz: std.posix.winsize = undefined,
 data: []u8,
@@ -16,7 +16,7 @@ pub fn init(allocator: std.mem.Allocator, config: Config) !@This() {
     var r = @This(){
         .width = config.width,
         .height = config.height,
-        .data = try allocator.alloc(u8, config.width * config.height),
+        .data = try allocator.alloc(u8, @intCast(config.width * config.height)),
     };
     r.read_winsz();
     try stdout.writeAll("\x1b[?25l");
@@ -67,10 +67,10 @@ pub fn check_ready(self: *@This()) void {
 pub inline fn text(self: *@This(), x: isize, y: isize, txt: []const u8) void {
     if (y < 0 or y >= self.height) return;
     const txtStart = @max(0, -x);
-    const txtEnd = @min(txt.len, self.width - x);
+    const txtEnd = @min(@as(isize, @intCast(txt.len)), self.width - x);
     if (txtEnd <= txtStart) return;
-    const tpos: usize = @intCast(@as(isize, @intCast(self.width)) * y + x);
-    @memcpy(self.data[tpos .. tpos + txtEnd - txtStart], txt[txtStart..txtEnd]);
+    const tpos: isize = @as(isize, @intCast(self.width)) * y + x;
+    @memcpy(self.data[@intCast(tpos)..@intCast(tpos + txtEnd - txtStart)], txt[@intCast(txtStart)..@intCast(txtEnd)]);
 }
 
 pub inline fn put(self: *@This(), x: isize, y: isize, c: u8) void {
@@ -80,7 +80,7 @@ pub inline fn put(self: *@This(), x: isize, y: isize, c: u8) void {
     self.data[tpos] = c;
 }
 
-pub fn blot(self: *@This(), sprite: *const Sprite, x: i16, y: i16) void {
+pub fn blot(self: *@This(), sprite: *const Sprite, x: isize, y: isize) void {
     for (0..sprite.height()) |sy| {
         const ty = y + @as(isize, @intCast(sy));
         if (ty < 0 or ty >= self.height) continue;
@@ -105,10 +105,10 @@ pub fn draw(self: *@This()) void {
         self.draw_unready() catch unreachable;
         return;
     }
-    var pos: usize = 0;
+    var pos: isize = 0;
     stdout.writeAll("\x1b[1;1H") catch unreachable;
     while (pos < self.data.len) {
-        stdout.writeAll(self.data[pos .. pos + self.width]) catch unreachable;
+        stdout.writeAll(self.data[@intCast(pos)..@intCast(pos + self.width)]) catch unreachable;
         stdout.writeAll("\x1b[0K\n") catch unreachable;
         pos += self.width;
     }

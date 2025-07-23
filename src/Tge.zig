@@ -98,7 +98,7 @@ fn tick(self: *@This()) bool {
     @memset(self.keys[0..], false);
     while (true)
         self.keys[stdin.readByte() catch break] = true;
-    if (self.keys['q'])
+    if (self.keys['Q'])
         return true;
     for (self.objects.items) |o| {
         o.tick(o.ptr, &self.keys);

@@ -1,2 +1,2 @@
-width: usize,
-height: usize,
+width: isize,
+height: isize,
