@@ -7,6 +7,9 @@ const imgFull: []const u8 = @embedFile("sprites/deck_full");
 const imgMedium: []const u8 = @embedFile("sprites/deck_medium");
 const imgSmall: []const u8 = @embedFile("sprites/deck_small");
 
+const top: isize = 8;
+const left: isize = 10;
+
 deck: *Deck,
 allocator: std.mem.Allocator,
 pile: std.ArrayList(*Deck.Card) = undefined,
@@ -22,10 +25,10 @@ pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
         self.sprite.data = imgSmall;
     }
     if (self.pile.items.len > 0)
-        display.blot(&self.sprite, 20, 15);
+        display.blot(&self.sprite, left, top);
     var buf: [15]u8 = undefined;
-    const txt = std.fmt.bufPrint(&buf, "(({d} left))", .{self.pile.items.len}) catch undefined;
-    display.text(22, 26, txt);
+    const txt = std.fmt.bufPrint(&buf, "{d}", .{self.pile.items.len}) catch undefined;
+    display.text(left + 13, top + 9, txt);
 }
 
 pub fn init(self: *@This(), random: std.Random) void {

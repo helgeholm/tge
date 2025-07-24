@@ -10,6 +10,8 @@ readied: bool = true,
 bodyCount: u5 = 0,
 body: ?Deck.Card = null,
 background: *Background,
+noWeapon: tge.Sprite = .{ .data = @embedFile("sprites/no_weapon"), .width = 12 },
+sheath: tge.Sprite = .{ .data = @embedFile("sprites/not_drawn_weapon"), .width = 13 },
 
 pub fn grabWeapon(self: *@This(), card: Deck.Card) void {
     self.weapon = card;
@@ -56,31 +58,34 @@ pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
     }
 }
 
+fn drawWeapon(self: @This(), display: *tge.Display) void {
+    const left = 10;
+    const top = 20;
+    if (self.weapon) |w| {
+        w.draw(left, top + 2, display);
+        if (self.body) |b| {
+            var bx: isize = left + 4;
+            for (0..self.bodyCount) |_| {
+                bx += 1;
+                b.drawDead(bx, top + 2, display);
+            }
+        }
+        display.text(left + 2, top, "[SPACE]");
+        if (self.readied) {
+            display.text(left + 2, top + 1, "Sheathe");
+        } else {
+            display.blot(&self.sheath, left, top + 5);
+            display.text(left + 3, top + 1, "Draw");
+        }
+    } else {
+        display.blot(&self.noWeapon, left, top + 2);
+    }
+}
+
 pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
     var txtbuf: [15]u8 = undefined;
     const txt = std.fmt.bufPrint(&txtbuf, "(( {d} LIFE ))", .{self.life}) catch unreachable;
     display.text(20, 37, txt);
-    display.text(42, 37, "WEAPON");
-    if (self.weapon) |w| {
-        display.blot(&w.sprite, 40, 29);
-        if (self.body) |b| {
-            var bx: isize = 44;
-            for (0..self.bodyCount) |_| {
-                bx += 1;
-                display.blot(&b.sprite, bx, 29);
-                display.put(bx + 4, 32, 'x');
-                display.put(bx + 6, 32, 'x');
-            }
-        }
-        display.text(42, 27, "[SPACE]");
-        if (self.readied) {
-            display.text(42, 28, "Put away");
-        } else {
-            display.text(39, 33, "--NOT-DRAWN--");
-            display.text(43, 28, "Draw");
-        }
-    } else {
-        display.text(41, 33, "((NONE))");
-    }
+    self.drawWeapon(display);
 }

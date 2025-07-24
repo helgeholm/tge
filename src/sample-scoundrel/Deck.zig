@@ -4,6 +4,31 @@ pub const Card = struct {
     suit: enum { club, diamond, heart, spade },
     strength: i6, // valid for arithmetic range -31,+32
     sprite: tge.Sprite,
+    pub fn draw(self: @This(), x: isize, y: isize, display: *tge.Display) void {
+        display.blot(&self.sprite, x, y);
+    }
+    pub fn drawDead(self: @This(), x: isize, y: isize, display: *tge.Display) void {
+        display.blot(&self.sprite, x, y);
+        switch (self.suit) {
+            .club, .spade => {
+                display.put(x + 4, y + 3, 'x');
+                display.put(x + 6, y + 3, 'x');
+            },
+            .diamond => {
+                display.put(x + 5, y + 1, ' ');
+                display.put(x + 4, y + 2, ' ');
+                display.put(x + 5, y + 2, '_');
+                display.put(x + 4, y + 3, '\\');
+            },
+            .heart => {
+                for (3..8) |ux2| {
+                    const x2: isize = @intCast(ux2);
+                    display.put(x + x2, y + 3, ' ');
+                    display.put(x + x2, y + 4, ' ');
+                }
+            },
+        }
+    }
 };
 
 cards: [44]Card = .{

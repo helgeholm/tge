@@ -17,7 +17,8 @@ pub fn main() !void {
     var t = try tge.singleton.init(gpa.allocator(), config);
     defer t.deinit();
 
-    var rng = std.Random.Pcg.init(@bitCast(std.time.milliTimestamp()));
+    //var rng = std.Random.Pcg.init(@bitCast(std.time.milliTimestamp()));
+    var rng = std.Random.Pcg.init(4);
     var bg = Background{};
     var deck = Deck{};
     var dg = Dungeon{ .deck = &deck, .allocator = gpa.allocator() };
