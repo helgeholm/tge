@@ -15,9 +15,8 @@ hasDrunk: bool = false,
 hasSkipped: bool = false,
 
 const roomActionKeys: [4]u8 = .{ 'q', 'w', 'e', 'r' };
-const top: isize = 8;
-const left: isize = 30;
-const skip: tge.Sprite = .{ .data = @embedFile("sprites/skip"), .width = 10 };
+const top: isize = 15;
+const left: isize = 24;
 
 pub fn pull(self: *@This()) void {
     for (0..4) |i| {
@@ -88,23 +87,20 @@ fn cardsRemaining(self: @This()) u3 {
 
 pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
-    const gap = 12;
+    const gap = 15;
     for (0..4) |i| {
         if (self.cards[i]) |c| {
             const x = left + @as(isize, @intCast(i)) * gap;
-            c.draw(x, top + 2, display);
+            c.draw(x, top, display);
             const action = switch (c.suit) {
                 .heart => "Drink",
                 .spade => "Fight",
                 .club => "Fight",
                 .diamond => "Wield",
             };
-            display.text(x + 3, top + 1, action);
-            display.text(x + 4, top, "[ ]");
-            display.put(x + 5, top, roomActionKeys[i] - 32);
+            display.text(x + 3, top + 10, action);
+            display.text(x + 4, top + 9, "[ ]");
+            display.put(x + 5, top + 9, roomActionKeys[i] - 32);
         }
     }
-    display.text(left + gap * 4 + 5, top, "[S]");
-    display.text(left + gap * 4 + 5, top + 1, "Skip");
-    display.blot(&skip, left + gap * 4 + 3, top + 3);
 }
