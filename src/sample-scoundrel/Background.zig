@@ -3,50 +3,39 @@ const std = @import("std");
 const tge = @import("tge");
 const Display = tge.Display;
 
-messageBuf: [60]u8 = undefined,
-messageSlice: []const u8 = "",
-messageTTL: u16 = 0,
+messageBuf: [1024]u8 = undefined,
+messageBufP: usize = 0,
+messageSlice: [11][]const u8 = .{ "", "", "", "", "", "", "", "", "", "", "" },
+messageNewTTL: usize = 0,
 
 const board = tge.Sprite{ .data = @embedFile("sprites/board"), .width = 101 };
 
-pub fn message(self: *@This(), comptime fmt: []const u8, args: anytype, duration: u16) void {
-    self.messageSlice = std.fmt.bufPrint(&self.messageBuf, fmt, args) catch unreachable;
-    self.messageTTL = duration;
+pub fn message(self: *@This(), comptime fmt: []const u8, args: anytype) void {
+    for (0..10) |i| {
+        self.messageSlice[i] = self.messageSlice[i + 1];
+    }
+    const fmted = std.fmt.bufPrint(self.messageBuf[self.messageBufP..], fmt, args) catch unreachable;
+    self.messageSlice[10] = fmted;
+    self.messageBufP += fmted.len;
+    if (self.messageBufP > 900) self.messageBufP = 0;
+    self.messageNewTTL = 99;
 }
 
 pub fn tick(ptr: *anyopaque, _: *[256]bool) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
-    if (self.messageTTL > 0) {
-        self.messageTTL -= 1;
-        if (self.messageTTL == 2) {
-            @memset(self.messageBuf[0..self.messageSlice.len], '_');
-        }
-        if (self.messageTTL == 0) {
-            self.messageSlice = "";
-        }
-    }
+    if (self.messageNewTTL > 0)
+        self.messageNewTTL -= 1;
 }
 
 pub fn draw(ptr: *anyopaque, display: *Display) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
     display.blot(&board, 0, 0);
-    const msgBlink = (self.messageTTL > 0 and @mod(self.messageTTL, 30) >= 20);
-    if (msgBlink) {
-        for (3..@intCast(display.width - 3)) |ux| {
-            const x: isize = @intCast(ux);
-            display.put(x, 2, '-');
-            display.put(x, 4, '-');
-        }
+    const msgTop: isize = 28;
+    const msgLeft: isize = 46;
+    for (0..10) |ui| {
+        const i: isize = @intCast(ui);
+        display.text(msgLeft, msgTop + i, self.messageSlice[ui]);
     }
-    if (self.messageTTL > 0) {
-        if (self.messageTTL > 2)
-            display.text(4, 3, self.messageSlice);
-        if (self.messageTTL < 4) {
-            const y: isize = 5 - self.messageTTL;
-            for (3..@intCast(display.width - 3)) |ux| {
-                const x: isize = @intCast(ux);
-                display.put(x, y, '_');
-            }
-        }
-    }
+    if (@mod(self.messageNewTTL, 20) < 15)
+        display.text(msgLeft, msgTop + 10, self.messageSlice[10]);
 }

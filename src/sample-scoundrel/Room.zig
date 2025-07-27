@@ -37,7 +37,7 @@ pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
                 },
                 .heart => {
                     if (self.hasDrunk)
-                        self.background.message("The second health potion had no effect.", .{}, 200)
+                        self.background.message("The second health potion had no effect.", .{})
                     else
                         self.player.heal(c.strength);
 
@@ -57,9 +57,9 @@ pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
     }
     if (keys['s']) {
         if (self.hasSkipped) {
-            self.background.message("Can't skip two rooms in a row", .{}, 200);
+            self.background.message("Can't skip two rooms in a row", .{});
         } else if (self.cardsRemaining() < 4) {
-            self.background.message("Can only skip full rooms", .{}, 200);
+            self.background.message("Can only skip full rooms", .{});
         } else {
             self.hasSkipped = true;
             self.random.shuffle(?*Deck.Card, &self.cards);

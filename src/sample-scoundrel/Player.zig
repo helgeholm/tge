@@ -21,7 +21,7 @@ pub fn grabWeapon(self: *@This(), card: Deck.Card) void {
 }
 
 pub fn win(self: *@This()) void {
-    self.background.message("Yay you wan!", .{}, 3000);
+    self.background.message("Yay you wan!", .{});
 }
 
 pub fn heal(self: *@This(), strength: i6) void {
@@ -33,7 +33,7 @@ pub fn fight(self: *@This(), card: Deck.Card) bool {
         const w = self.weapon.?;
         if (self.body) |b| {
             if (card.strength >= b.strength) {
-                self.background.message("Current weapon cannot fight enemies strength {d} or above!", .{b.strength}, 300);
+                self.background.message("Weapon cannot fight enemies {d} or above!", .{b.strength});
                 return false;
             }
         }
@@ -46,7 +46,7 @@ pub fn fight(self: *@This(), card: Deck.Card) bool {
         self.life -= card.strength;
     }
     if (self.life <= 0) {
-        self.background.message("-- You are dead :( --", .{}, 3000);
+        self.background.message("-- You are dead :( --", .{});
     }
     return true;
 }
