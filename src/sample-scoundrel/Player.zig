@@ -3,21 +3,48 @@ const tge = @import("tge");
 
 const Deck = @import("Deck.zig");
 const Background = @import("Background.zig");
+const Discards = @import("Discards.zig");
+const Overlay = @import("Overlay.zig");
 
 life: i8 = 20,
 weapon: ?Deck.Card = null,
 readied: bool = true,
-bodyCount: u5 = 0,
-body: ?Deck.Card = null,
+allocator: std.mem.Allocator,
+bodies: std.ArrayList(Deck.Card) = undefined,
 background: *Background,
+discards: *Discards,
+overlay: *Overlay,
 noWeapon: tge.Sprite = .{ .data = @embedFile("sprites/no_weapon"), .width = 12 },
 sheath: tge.Sprite = .{ .data = @embedFile("sprites/not_drawn_weapon"), .width = 13 },
 
+pub fn init(self: *@This()) void {
+    self.bodies = std.ArrayList(Deck.Card).init(self.allocator);
+}
+
+pub fn reset(self: *@This()) void {
+    self.bodies.clearRetainingCapacity();
+    self.weapon = null;
+    self.readied = false;
+    self.life = 20;
+}
+
+pub fn deinit(self: *@This()) void {
+    self.bodies.deinit();
+}
+
 pub fn grabWeapon(self: *@This(), card: Deck.Card) void {
+    if (self.weapon) |w| {
+        self.background.message("You replace your weapon ({d}) with a new ({d})", .{ w.strength, card.strength });
+        self.discards.discard(w);
+    } else {
+        self.background.message("You grab a weapon ({d})", .{card.strength});
+    }
     self.weapon = card;
     self.readied = true;
-    self.bodyCount = 0;
-    self.body = null;
+    for (self.bodies.items) |b| {
+        self.discards.discard(b);
+    }
+    self.bodies.clearRetainingCapacity();
 }
 
 pub fn win(self: *@This()) void {
@@ -26,24 +53,25 @@ pub fn win(self: *@This()) void {
 
 pub fn heal(self: *@This(), strength: i6) void {
     self.life = @min(20, self.life + strength);
+    self.background.message("You heal for {d}", .{strength});
 }
 
 pub fn fight(self: *@This(), card: Deck.Card) bool {
     if (self.readied and self.weapon != null) {
         const w = self.weapon.?;
-        if (self.body) |b| {
+        if (self.bodies.getLastOrNull()) |b| {
             if (card.strength >= b.strength) {
                 self.background.message("Weapon cannot fight enemies {d} or above!", .{b.strength});
                 return false;
             }
         }
-
-        self.body = card;
-        self.bodyCount += 1;
+        const newBody = self.bodies.addOne() catch unreachable;
+        newBody.* = card;
         if (card.strength > w.strength)
             self.life -= (card.strength - w.strength);
     } else {
         self.life -= card.strength;
+        self.discards.discard(card);
     }
     if (self.life <= 0) {
         self.background.message("-- You are dead :( --", .{});
@@ -53,6 +81,7 @@ pub fn fight(self: *@This(), card: Deck.Card) bool {
 
 pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
+    if (self.overlay.isHelping) return;
     if (keys[' ']) {
         self.readied = !self.readied;
     }
@@ -63,12 +92,10 @@ fn drawWeapon(self: @This(), display: *tge.Display) void {
     const top = 29;
     if (self.weapon) |w| {
         w.draw(left, top, display);
-        if (self.body) |b| {
-            var bx: isize = left + 4;
-            for (0..self.bodyCount) |_| {
-                bx += 1;
-                b.drawDead(bx, top, display);
-            }
+        var bx: isize = left + 4;
+        for (self.bodies.items) |b| {
+            bx += 1;
+            b.drawDead(bx, top, display);
         }
         display.text(left + 2, top + 9, "[SPACE]");
         if (self.readied) {

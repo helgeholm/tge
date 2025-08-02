@@ -18,7 +18,7 @@ pub fn message(self: *@This(), comptime fmt: []const u8, args: anytype) void {
     self.messageSlice[10] = fmted;
     self.messageBufP += fmted.len;
     if (self.messageBufP > 900) self.messageBufP = 0;
-    self.messageNewTTL = 99;
+    self.messageNewTTL = 59;
 }
 
 pub fn tick(ptr: *anyopaque, _: *[256]bool) void {

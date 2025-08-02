@@ -5,11 +5,15 @@ const Deck = @import("Deck.zig");
 const Dungeon = @import("Dungeon.zig");
 const Player = @import("Player.zig");
 const Background = @import("Background.zig");
+const Discards = @import("Discards.zig");
+const Overlay = @import("Overlay.zig");
 
 random: std.Random,
 player: *Player,
 dungeon: *Dungeon,
 background: *Background,
+discards: *Discards,
+overlay: *Overlay,
 cards: [4]?*Deck.Card = .{ null, null, null, null },
 hasDrunk: bool = false,
 hasSkipped: bool = false,
@@ -26,8 +30,24 @@ pub fn pull(self: *@This()) void {
     self.hasDrunk = false;
 }
 
+pub fn startNewGame(self: *@This()) void {
+    self.player.reset();
+    self.discards.reset();
+    self.dungeon.reset();
+    for (0..4) |i| {
+        self.cards[i] = null;
+    }
+    self.hasDrunk = false;
+    self.hasSkipped = false;
+    self.pull();
+    self.background.message("New game started!", .{});
+}
+
 pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
+    if (keys['h']) self.overlay.isHelping = true;
+    if (keys['k']) self.overlay.isHelping = false;
+    if (self.overlay.isHelping) return;
     for (0..4) |a| {
         if (keys[roomActionKeys[a]]) if (self.cards[a]) |c| {
             switch (c.suit) {
@@ -37,11 +57,12 @@ pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
                 },
                 .heart => {
                     if (self.hasDrunk)
-                        self.background.message("The second health potion had no effect.", .{})
+                        self.background.message("You discard a health potion ({d})", .{c.strength})
                     else
                         self.player.heal(c.strength);
 
                     self.hasDrunk = true;
+                    self.discards.discard(c.*);
                     self.cards[a] = null;
                 },
                 .club, .spade => {
@@ -57,9 +78,9 @@ pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
     }
     if (keys['s']) {
         if (self.hasSkipped) {
-            self.background.message("Can't skip two rooms in a row", .{});
+            self.background.message("Can't skip two rooms in a row!", .{});
         } else if (self.cardsRemaining() < 4) {
-            self.background.message("Can only skip full rooms", .{});
+            self.background.message("Can only skip full rooms!", .{});
         } else {
             self.hasSkipped = true;
             self.random.shuffle(?*Deck.Card, &self.cards);
@@ -70,7 +91,11 @@ pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
                 }
             }
             self.pull();
+            self.background.message("You skip to a new room", .{});
         }
+    }
+    if (keys['n']) {
+        self.startNewGame();
     }
     if (self.cardsRemaining() == 0)
         self.player.win();
@@ -93,12 +118,11 @@ pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
             const x = left + @as(isize, @intCast(i)) * gap;
             c.draw(x, top, display);
             const action = switch (c.suit) {
-                .heart => "Drink",
-                .spade => "Fight",
-                .club => "Fight",
-                .diamond => "Wield",
+                .heart => if (self.hasDrunk) "Discard" else " Drink",
+                .spade, .club => " Fight",
+                .diamond => " Wield",
             };
-            display.text(x + 3, top + 10, action);
+            display.text(x + 2, top + 10, action);
             display.text(x + 4, top + 9, "[ ]");
             display.put(x + 5, top + 9, roomActionKeys[i] - 32);
         }

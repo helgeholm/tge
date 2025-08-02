@@ -10,6 +10,7 @@ const imgSmall: []const u8 = @embedFile("sprites/deck_small");
 const top: isize = 13;
 const left: isize = 6;
 
+random: std.Random,
 deck: *Deck,
 allocator: std.mem.Allocator,
 pile: std.ArrayList(*Deck.Card) = undefined,
@@ -32,13 +33,17 @@ pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
     display.put(3, 23, txt[1]);
 }
 
-pub fn init(self: *@This(), random: std.Random) void {
+pub fn init(self: *@This()) void {
     self.pile = std.ArrayList(*Deck.Card).init(self.allocator);
+}
+
+pub fn reset(self: *@This()) void {
+    self.pile.clearRetainingCapacity();
     for (&self.deck.cards) |*c| {
         const added = self.pile.addOne() catch unreachable;
         added.* = c;
     }
-    random.shuffle(*Deck.Card, self.pile.items);
+    self.random.shuffle(*Deck.Card, self.pile.items);
 }
 
 pub fn deinit(self: *@This()) void {
