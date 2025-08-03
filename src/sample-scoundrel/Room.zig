@@ -34,6 +34,8 @@ pub fn startNewGame(self: *@This()) void {
     self.player.reset();
     self.discards.reset();
     self.dungeon.reset();
+    self.overlay.isWinning = false;
+    self.overlay.isLosing = false;
     for (0..4) |i| {
         self.cards[i] = null;
     }
@@ -45,9 +47,11 @@ pub fn startNewGame(self: *@This()) void {
 
 pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
-    if (keys['h']) self.overlay.isHelping = true;
     if (keys['k']) self.overlay.isHelping = false;
     if (self.overlay.isHelping) return;
+    if (keys['n']) self.startNewGame();
+    if (self.overlay.paused()) return;
+    if (keys['h']) self.overlay.isHelping = true;
     for (0..4) |a| {
         if (keys[roomActionKeys[a]]) if (self.cards[a]) |c| {
             switch (c.suit) {
@@ -94,11 +98,8 @@ pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
             self.background.message("You skip to a new room", .{});
         }
     }
-    if (keys['n']) {
-        self.startNewGame();
-    }
-    if (self.cardsRemaining() == 0)
-        self.player.win();
+    if (self.cardsRemaining() == 0 and !self.overlay.isLosing)
+        self.overlay.isWinning = true;
 }
 
 fn cardsRemaining(self: @This()) u3 {

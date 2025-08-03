@@ -73,9 +73,8 @@ pub fn fight(self: *@This(), card: Deck.Card) bool {
         self.life -= card.strength;
         self.discards.discard(card);
     }
-    if (self.life <= 0) {
-        self.background.message("-- You are dead :( --", .{});
-    }
+    if (self.life <= 0)
+        self.overlay.isLosing = true;
     return true;
 }
 
