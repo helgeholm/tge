@@ -14,10 +14,12 @@ bodies: std.ArrayList(Deck.Card) = undefined,
 background: *Background,
 discards: *Discards,
 overlay: *Overlay,
-noWeapon: tge.Sprite = .{ .data = @embedFile("sprites/no_weapon"), .width = 12 },
-sheath: tge.Sprite = .{ .data = @embedFile("sprites/not_drawn_weapon"), .width = 13 },
+noWeapon: tge.Image = .{ .source = @import("images/no_weapon.zon") },
+sheath: tge.Image = .{ .source = @import("images/not_drawn_weapon.zon") },
 
 pub fn init(self: *@This()) void {
+    self.sheath.init(self.allocator);
+    self.noWeapon.init(self.allocator);
     self.bodies = std.ArrayList(Deck.Card).init(self.allocator);
 }
 
@@ -30,6 +32,8 @@ pub fn reset(self: *@This()) void {
 
 pub fn deinit(self: *@This()) void {
     self.bodies.deinit();
+    self.sheath.deinit(self.allocator);
+    self.noWeapon.deinit(self.allocator);
 }
 
 pub fn grabWeapon(self: *@This(), card: Deck.Card) void {
@@ -100,11 +104,11 @@ fn drawWeapon(self: @This(), display: *tge.Display) void {
         if (self.readied) {
             display.text(left + 2, top + 10, "Sheathe");
         } else {
-            display.blot(&self.sheath, left, top + 3);
+            display.putImage(&self.sheath, left, top + 3);
             display.text(left + 3, top + 10, "Draw");
         }
     } else {
-        display.blot(&self.noWeapon, left, top);
+        display.putImage(&self.noWeapon, left, top);
     }
 }
 

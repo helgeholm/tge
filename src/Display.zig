@@ -1,6 +1,7 @@
 const std = @import("std");
 const Config = @import("Config.zig");
 const Sprite = @import("Sprite.zig");
+const Image = @import("Image.zig");
 
 const DisplayState = enum { unready, ready };
 
@@ -78,6 +79,21 @@ pub inline fn put(self: *@This(), x: isize, y: isize, c: u8) void {
     if (x < 0 or x >= self.width) return;
     const tpos: usize = @intCast(@as(isize, @intCast(self.width)) * y + x);
     self.data[tpos] = c;
+}
+
+pub fn putImage(self: *@This(), image: *const Image, x: isize, y: isize) void {
+    for (0..image.height) |sy| {
+        const ty = y + @as(isize, @intCast(sy));
+        if (ty < 0 or ty >= self.height) continue;
+        for (0..image.width) |sx| {
+            const tx = x + @as(isize, @intCast(sx));
+            if (tx < 0 or tx >= self.width) continue;
+            const spos: usize = @as(usize, @intCast(image.width)) * sy + sx;
+            const tpos: usize = @intCast(@as(isize, @intCast(self.width)) * ty + tx);
+            if (image.data[spos] < 32) continue;
+            self.data[tpos] = image.data[spos];
+        }
+    }
 }
 
 pub fn blot(self: *@This(), sprite: *const Sprite, x: isize, y: isize) void {

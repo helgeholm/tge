@@ -3,10 +3,6 @@ const tge = @import("tge");
 
 const Deck = @import("Deck.zig");
 
-const imgFull: []const u8 = @embedFile("sprites/deck_full");
-const imgMedium: []const u8 = @embedFile("sprites/deck_medium");
-const imgSmall: []const u8 = @embedFile("sprites/deck_small");
-
 const top: isize = 13;
 const left: isize = 6;
 
@@ -14,19 +10,21 @@ random: std.Random,
 deck: *Deck,
 allocator: std.mem.Allocator,
 pile: std.ArrayList(*Deck.Card) = undefined,
-sprite: tge.Sprite = .{ .data = imgFull, .width = 14 },
+imgFull: tge.Image = .{ .source = @import("images/deck_full.zon") },
+imgMedium: tge.Image = .{ .source = @import("images/deck_medium.zon") },
+imgSmall: tge.Image = .{ .source = @import("images/deck_small.zon") },
 
 pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
-    if (self.pile.items.len > 30) {
-        self.sprite.data = imgFull;
-    } else if (self.pile.items.len > 2) {
-        self.sprite.data = imgMedium;
-    } else {
-        self.sprite.data = imgSmall;
-    }
+    const image =
+        if (self.pile.items.len > 30)
+            self.imgFull
+        else if (self.pile.items.len > 2)
+            self.imgMedium
+        else
+            self.imgSmall;
     if (self.pile.items.len > 0)
-        display.blot(&self.sprite, left, top);
+        display.putImage(&image, left, top);
     var buf: [15]u8 = undefined;
     const txt = std.fmt.bufPrint(&buf, "{d} ", .{self.pile.items.len}) catch undefined;
     display.put(3, 22, txt[0]);
@@ -34,6 +32,9 @@ pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
 }
 
 pub fn init(self: *@This()) void {
+    self.imgFull.init(self.allocator);
+    self.imgMedium.init(self.allocator);
+    self.imgSmall.init(self.allocator);
     self.pile = std.ArrayList(*Deck.Card).init(self.allocator);
 }
 
@@ -47,5 +48,8 @@ pub fn reset(self: *@This()) void {
 }
 
 pub fn deinit(self: *@This()) void {
+    self.imgFull.deinit(self.allocator);
+    self.imgMedium.deinit(self.allocator);
+    self.imgSmall.deinit(self.allocator);
     self.pile.deinit();
 }
