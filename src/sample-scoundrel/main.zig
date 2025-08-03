@@ -21,11 +21,17 @@ pub fn main() !void {
 
     var rng = std.Random.Pcg.init(@bitCast(std.time.milliTimestamp()));
     var overlay = Overlay{ .random = rng.random() };
+    overlay.init(gpa.allocator());
+    defer overlay.deinit(gpa.allocator());
     var bg = Background{};
+    bg.init(gpa.allocator());
+    defer bg.deinit(gpa.allocator());
     var discards = Discards{ .allocator = gpa.allocator(), .random = rng.random() };
     discards.init();
     defer discards.deinit();
     var deck = Deck{};
+    deck.init(gpa.allocator());
+    defer deck.deinit(gpa.allocator());
     var dg = Dungeon{ .random = rng.random(), .deck = &deck, .allocator = gpa.allocator() };
     dg.init();
     defer dg.deinit();

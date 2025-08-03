@@ -15,8 +15,8 @@ const DiscardedCard = struct {
     pub fn init(random: std.Random, card: Deck.Card, w: isize, h: isize) DiscardedCard {
         return .{
             .card = card,
-            .x = random.intRangeLessThan(isize, left, w - card.sprite.width),
-            .y = random.intRangeLessThan(isize, top, h - card.sprite.height()),
+            .x = random.intRangeLessThan(isize, left, w - card.image.width),
+            .y = random.intRangeLessThan(isize, top, h - card.image.height),
         };
     }
     pub fn draw(self: DiscardedCard, display: *tge.Display) void {

@@ -1,14 +1,15 @@
+const std = @import("std");
 const tge = @import("tge");
 
 pub const Card = struct {
     suit: enum { club, diamond, heart, spade },
     strength: i6, // valid for arithmetic range -31,+32
-    sprite: tge.Sprite,
+    image: tge.Image,
     pub fn draw(self: @This(), x: isize, y: isize, display: *tge.Display) void {
-        display.blot(&self.sprite, x, y);
+        display.putImage(&self.image, x, y);
     }
     pub fn drawDead(self: @This(), x: isize, y: isize, display: *tge.Display) void {
-        display.blot(&self.sprite, x, y);
+        display.putImage(&self.image, x, y);
         switch (self.suit) {
             .club, .spade => {
                 display.put(x + 4, y + 3, 'x');
@@ -31,225 +32,237 @@ pub const Card = struct {
     }
 };
 
+pub fn init(self: *@This(), alloc: std.mem.Allocator) void {
+    for (&self.cards) |*c| {
+        c.image.init(alloc);
+    }
+}
+
+pub fn deinit(self: *@This(), alloc: std.mem.Allocator) void {
+    for (&self.cards) |*c| {
+        c.image.deinit(alloc);
+    }
+}
+
 cards: [44]Card = .{
     .{
         .suit = .club,
         .strength = 2,
-        .sprite = .{ .data = @embedFile("sprites/club2"), .width = 12 },
+        .image = .{ .source = @import("images/club2.zon") },
     },
     .{
         .suit = .club,
         .strength = 3,
-        .sprite = .{ .data = @embedFile("sprites/club3"), .width = 12 },
+        .image = .{ .source = @import("images/club3.zon") },
     },
     .{
         .suit = .club,
         .strength = 4,
-        .sprite = .{ .data = @embedFile("sprites/club4"), .width = 12 },
+        .image = .{ .source = @import("images/club4.zon") },
     },
     .{
         .suit = .club,
         .strength = 5,
-        .sprite = .{ .data = @embedFile("sprites/club5"), .width = 12 },
+        .image = .{ .source = @import("images/club5.zon") },
     },
     .{
         .suit = .club,
         .strength = 6,
-        .sprite = .{ .data = @embedFile("sprites/club6"), .width = 12 },
+        .image = .{ .source = @import("images/club6.zon") },
     },
     .{
         .suit = .club,
         .strength = 7,
-        .sprite = .{ .data = @embedFile("sprites/club7"), .width = 12 },
+        .image = .{ .source = @import("images/club7.zon") },
     },
     .{
         .suit = .club,
         .strength = 8,
-        .sprite = .{ .data = @embedFile("sprites/club8"), .width = 12 },
+        .image = .{ .source = @import("images/club8.zon") },
     },
     .{
         .suit = .club,
         .strength = 9,
-        .sprite = .{ .data = @embedFile("sprites/club9"), .width = 12 },
+        .image = .{ .source = @import("images/club9.zon") },
     },
     .{
         .suit = .club,
         .strength = 10,
-        .sprite = .{ .data = @embedFile("sprites/club10"), .width = 12 },
+        .image = .{ .source = @import("images/club10.zon") },
     },
     .{
         .suit = .club,
         .strength = 11,
-        .sprite = .{ .data = @embedFile("sprites/club11"), .width = 12 },
+        .image = .{ .source = @import("images/club11.zon") },
     },
     .{
         .suit = .club,
         .strength = 12,
-        .sprite = .{ .data = @embedFile("sprites/club12"), .width = 12 },
+        .image = .{ .source = @import("images/club12.zon") },
     },
     .{
         .suit = .club,
         .strength = 13,
-        .sprite = .{ .data = @embedFile("sprites/club13"), .width = 12 },
+        .image = .{ .source = @import("images/club13.zon") },
     },
     .{
         .suit = .club,
         .strength = 14,
-        .sprite = .{ .data = @embedFile("sprites/club14"), .width = 12 },
+        .image = .{ .source = @import("images/club14.zon") },
     },
     .{
         .suit = .spade,
         .strength = 2,
-        .sprite = .{ .data = @embedFile("sprites/spade2"), .width = 12 },
+        .image = .{ .source = @import("images/spade2.zon") },
     },
     .{
         .suit = .spade,
         .strength = 3,
-        .sprite = .{ .data = @embedFile("sprites/spade3"), .width = 12 },
+        .image = .{ .source = @import("images/spade3.zon") },
     },
     .{
         .suit = .spade,
         .strength = 4,
-        .sprite = .{ .data = @embedFile("sprites/spade4"), .width = 12 },
+        .image = .{ .source = @import("images/spade4.zon") },
     },
     .{
         .suit = .spade,
         .strength = 5,
-        .sprite = .{ .data = @embedFile("sprites/spade5"), .width = 12 },
+        .image = .{ .source = @import("images/spade5.zon") },
     },
     .{
         .suit = .spade,
         .strength = 6,
-        .sprite = .{ .data = @embedFile("sprites/spade6"), .width = 12 },
+        .image = .{ .source = @import("images/spade6.zon") },
     },
     .{
         .suit = .spade,
         .strength = 7,
-        .sprite = .{ .data = @embedFile("sprites/spade7"), .width = 12 },
+        .image = .{ .source = @import("images/spade7.zon") },
     },
     .{
         .suit = .spade,
         .strength = 8,
-        .sprite = .{ .data = @embedFile("sprites/spade8"), .width = 12 },
+        .image = .{ .source = @import("images/spade8.zon") },
     },
     .{
         .suit = .spade,
         .strength = 9,
-        .sprite = .{ .data = @embedFile("sprites/spade9"), .width = 12 },
+        .image = .{ .source = @import("images/spade9.zon") },
     },
     .{
         .suit = .spade,
         .strength = 10,
-        .sprite = .{ .data = @embedFile("sprites/spade10"), .width = 12 },
+        .image = .{ .source = @import("images/spade10.zon") },
     },
     .{
         .suit = .spade,
         .strength = 11,
-        .sprite = .{ .data = @embedFile("sprites/spade11"), .width = 12 },
+        .image = .{ .source = @import("images/spade11.zon") },
     },
     .{
         .suit = .spade,
         .strength = 12,
-        .sprite = .{ .data = @embedFile("sprites/spade12"), .width = 12 },
+        .image = .{ .source = @import("images/spade12.zon") },
     },
     .{
         .suit = .spade,
         .strength = 13,
-        .sprite = .{ .data = @embedFile("sprites/spade13"), .width = 12 },
+        .image = .{ .source = @import("images/spade13.zon") },
     },
     .{
         .suit = .spade,
         .strength = 14,
-        .sprite = .{ .data = @embedFile("sprites/spade14"), .width = 12 },
+        .image = .{ .source = @import("images/spade14.zon") },
     },
     .{
         .suit = .heart,
         .strength = 2,
-        .sprite = .{ .data = @embedFile("sprites/heart2"), .width = 12 },
+        .image = .{ .source = @import("images/heart2.zon") },
     },
     .{
         .suit = .heart,
         .strength = 3,
-        .sprite = .{ .data = @embedFile("sprites/heart3"), .width = 12 },
+        .image = .{ .source = @import("images/heart3.zon") },
     },
     .{
         .suit = .heart,
         .strength = 4,
-        .sprite = .{ .data = @embedFile("sprites/heart4"), .width = 12 },
+        .image = .{ .source = @import("images/heart4.zon") },
     },
     .{
         .suit = .heart,
         .strength = 5,
-        .sprite = .{ .data = @embedFile("sprites/heart5"), .width = 12 },
+        .image = .{ .source = @import("images/heart5.zon") },
     },
     .{
         .suit = .heart,
         .strength = 6,
-        .sprite = .{ .data = @embedFile("sprites/heart6"), .width = 12 },
+        .image = .{ .source = @import("images/heart6.zon") },
     },
     .{
         .suit = .heart,
         .strength = 7,
-        .sprite = .{ .data = @embedFile("sprites/heart7"), .width = 12 },
+        .image = .{ .source = @import("images/heart7.zon") },
     },
     .{
         .suit = .heart,
         .strength = 8,
-        .sprite = .{ .data = @embedFile("sprites/heart8"), .width = 12 },
+        .image = .{ .source = @import("images/heart8.zon") },
     },
     .{
         .suit = .heart,
         .strength = 9,
-        .sprite = .{ .data = @embedFile("sprites/heart9"), .width = 12 },
+        .image = .{ .source = @import("images/heart9.zon") },
     },
     .{
         .suit = .heart,
         .strength = 10,
-        .sprite = .{ .data = @embedFile("sprites/heart10"), .width = 12 },
+        .image = .{ .source = @import("images/heart10.zon") },
     },
     .{
         .suit = .diamond,
         .strength = 2,
-        .sprite = .{ .data = @embedFile("sprites/diamond2"), .width = 12 },
+        .image = .{ .source = @import("images/diamond2.zon") },
     },
     .{
         .suit = .diamond,
         .strength = 3,
-        .sprite = .{ .data = @embedFile("sprites/diamond3"), .width = 12 },
+        .image = .{ .source = @import("images/diamond3.zon") },
     },
     .{
         .suit = .diamond,
         .strength = 4,
-        .sprite = .{ .data = @embedFile("sprites/diamond4"), .width = 12 },
+        .image = .{ .source = @import("images/diamond4.zon") },
     },
     .{
         .suit = .diamond,
         .strength = 5,
-        .sprite = .{ .data = @embedFile("sprites/diamond5"), .width = 12 },
+        .image = .{ .source = @import("images/diamond5.zon") },
     },
     .{
         .suit = .diamond,
         .strength = 6,
-        .sprite = .{ .data = @embedFile("sprites/diamond6"), .width = 12 },
+        .image = .{ .source = @import("images/diamond6.zon") },
     },
     .{
         .suit = .diamond,
         .strength = 7,
-        .sprite = .{ .data = @embedFile("sprites/diamond7"), .width = 12 },
+        .image = .{ .source = @import("images/diamond7.zon") },
     },
     .{
         .suit = .diamond,
         .strength = 8,
-        .sprite = .{ .data = @embedFile("sprites/diamond8"), .width = 12 },
+        .image = .{ .source = @import("images/diamond8.zon") },
     },
     .{
         .suit = .diamond,
         .strength = 9,
-        .sprite = .{ .data = @embedFile("sprites/diamond9"), .width = 12 },
+        .image = .{ .source = @import("images/diamond9.zon") },
     },
     .{
         .suit = .diamond,
         .strength = 10,
-        .sprite = .{ .data = @embedFile("sprites/diamond10"), .width = 12 },
+        .image = .{ .source = @import("images/diamond10.zon") },
     },
 },

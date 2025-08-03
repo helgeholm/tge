@@ -7,8 +7,15 @@ messageBuf: [1024]u8 = undefined,
 messageBufP: usize = 0,
 messageSlice: [11][]const u8 = .{ "", "", "", "", "", "", "", "", "", "", "" },
 messageNewTTL: usize = 0,
+board: tge.Image = .{ .source = @import("images/board.zon") },
 
-const board = tge.Sprite{ .data = @embedFile("sprites/board"), .width = 101 };
+pub fn init(self: *@This(), alloc: std.mem.Allocator) void {
+    self.board.init(alloc);
+}
+
+pub fn deinit(self: *@This(), alloc: std.mem.Allocator) void {
+    self.board.deinit(alloc);
+}
 
 pub fn message(self: *@This(), comptime fmt: []const u8, args: anytype) void {
     for (0..10) |i| {
@@ -29,7 +36,7 @@ pub fn tick(ptr: *anyopaque, _: *[256]bool) void {
 
 pub fn draw(ptr: *anyopaque, display: *Display) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
-    display.blot(&board, 0, 0);
+    display.putImage(&self.board, 0, 0);
     const msgTop: isize = 28;
     const msgLeft: isize = 46;
     for (0..10) |ui| {
