@@ -11,12 +11,14 @@ height: isize,
 state: DisplayState = .unready,
 winsz: std.posix.winsize = undefined,
 data: []u8,
+color: []Image.Color,
 
 pub fn init(allocator: std.mem.Allocator, config: Config) !@This() {
     var r = @This(){
         .width = config.width,
         .height = config.height,
         .data = try allocator.alloc(u8, @intCast(config.width * config.height)),
+        .color = try allocator.alloc(Image.Color, @intCast(config.width * config.height)),
     };
     r.read_winsz();
     try stdout.writeAll("\x1b[?25l");
@@ -26,6 +28,7 @@ pub fn init(allocator: std.mem.Allocator, config: Config) !@This() {
 pub fn deinit(self: *@This(), allocator: std.mem.Allocator) void {
     stdout.writeAll("\x1b[?25h") catch {};
     allocator.free(self.data);
+    allocator.free(self.color);
 }
 
 fn read_winsz(self: *@This()) void {
@@ -39,6 +42,7 @@ fn read_winsz(self: *@This()) void {
 
 pub fn clear(self: *@This()) void {
     @memset(self.data, ' ');
+    @memset(self.color, .white);
 }
 
 fn draw_unready(self: @This()) !void {
@@ -91,6 +95,7 @@ pub fn putImage(self: *@This(), image: *const Image, x: isize, y: isize) void {
             const tpos: usize = @intCast(@as(isize, @intCast(self.width)) * ty + tx);
             if (image.data[spos] < 32) continue;
             self.data[tpos] = image.data[spos];
+            self.color[tpos] = image.color[spos];
         }
     }
 }
@@ -100,17 +105,47 @@ pub fn print(self: *@This(), x: isize, y: isize, comptime fmt: []const u8, args:
     _ = std.fmt.bufPrint(self.data[pos..], fmt, args) catch unreachable;
 }
 
+inline fn setColor(color: Image.Color) []const u8 {
+    return switch (color) {
+        .black => "\x1b[0;30m",
+        .red => "\x1b[0;31m",
+        .green => "\x1b[0;32m",
+        .yellow => "\x1b[0;33m",
+        .blue => "\x1b[0;34m",
+        .magenta => "\x1b[0;35m",
+        .cyan => "\x1b[0;36m",
+        .white => "\x1b[0;37m",
+        .strong_black => "\x1b[1;30m",
+        .strong_red => "\x1b[1;31m",
+        .strong_green => "\x1b[1;32m",
+        .strong_yellow => "\x1b[1;33m",
+        .strong_blue => "\x1b[1;34m",
+        .strong_magenta => "\x1b[1;35m",
+        .strong_cyan => "\x1b[1;36m",
+        .strong_white => "\x1b[1;37m",
+    };
+}
+
 pub fn draw(self: *@This()) void {
     if (self.state == .unready) {
         self.draw_unready() catch unreachable;
         return;
     }
-    var pos: isize = 0;
-    stdout.writeAll("\x1b[1;1H") catch unreachable;
+    stdout.writeAll("\x1b[1;1H\x1b[0;0m") catch unreachable;
+    var color: Image.Color = .white;
+    var pos: usize = 0;
+    stdout.writeAll(setColor(color)) catch unreachable;
     while (pos < self.data.len) {
-        stdout.writeAll(self.data[@intCast(pos)..@intCast(pos + self.width)]) catch unreachable;
+        const endLine = pos + @as(usize, @intCast(self.width));
+        while (pos < endLine) {
+            if (self.color[pos] != color) {
+                color = self.color[pos];
+                stdout.writeAll(setColor(color)) catch unreachable;
+            }
+            stdout.writeByte(self.data[pos]) catch unreachable;
+            pos += 1;
+        }
         stdout.writeAll("\x1b[0K\n") catch unreachable;
-        pos += self.width;
     }
     stdout.writeAll("\x1b[0J") catch unreachable;
 }
