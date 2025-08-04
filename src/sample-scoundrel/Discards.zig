@@ -5,7 +5,7 @@ const Deck = @import("Deck.zig");
 
 const top: isize = 0;
 const left: isize = 0;
-const height: isize = 16;
+const height: isize = 18;
 const width: isize = 100;
 
 const DiscardedCard = struct {

@@ -68,13 +68,16 @@ pub fn check_ready(self: *@This()) void {
         .unready;
 }
 
-pub inline fn text(self: *@This(), x: isize, y: isize, txt: []const u8) void {
+pub inline fn text(self: *@This(), x: isize, y: isize, txt: []const u8, color: Image.Color) void {
     if (y < 0 or y >= self.height) return;
     const txtStart = @max(0, -x);
     const txtEnd = @min(@as(isize, @intCast(txt.len)), self.width - x);
     if (txtEnd <= txtStart) return;
-    const tpos: isize = @as(isize, @intCast(self.width)) * y + x;
-    @memcpy(self.data[@intCast(tpos)..@intCast(tpos + txtEnd - txtStart)], txt[@intCast(txtStart)..@intCast(txtEnd)]);
+    const tpos: isize = self.width * y + x;
+    const begin: usize = @intCast(tpos);
+    const end: usize = @intCast(tpos + txtEnd - txtStart);
+    @memcpy(self.data[begin..end], txt[@intCast(txtStart)..@intCast(txtEnd)]);
+    @memset(self.color[begin..end], color);
 }
 
 pub inline fn put(self: *@This(), x: isize, y: isize, c: u8, color: Image.Color) void {

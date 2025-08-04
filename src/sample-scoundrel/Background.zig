@@ -41,8 +41,8 @@ pub fn draw(ptr: *anyopaque, display: *Display) void {
     const msgLeft: isize = 46;
     for (0..10) |ui| {
         const i: isize = @intCast(ui);
-        display.text(msgLeft, msgTop + i, self.messageSlice[ui]);
+        display.text(msgLeft, msgTop + i, self.messageSlice[ui], .white);
     }
     if (@mod(self.messageNewTTL, 20) < 15)
-        display.text(msgLeft, msgTop + 10, self.messageSlice[10]);
+        display.text(msgLeft, msgTop + 10, self.messageSlice[10], .strong_white);
 }

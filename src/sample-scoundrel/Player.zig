@@ -100,12 +100,12 @@ fn drawWeapon(self: @This(), display: *tge.Display) void {
             bx += 1;
             b.drawDead(bx, top, display);
         }
-        display.text(left + 2, top + 9, "[SPACE]");
+        display.text(left + 2, top + 9, "[SPACE]", .strong_white);
         if (self.readied) {
-            display.text(left + 2, top + 10, "Sheathe");
+            display.text(left + 2, top + 10, "Sheathe", .strong_white);
         } else {
             display.putImage(&self.sheath, left + 1, top + 2);
-            display.text(left + 3, top + 10, "Draw");
+            display.text(left + 3, top + 10, "Draw", .strong_white);
         }
     } else {
         display.putImage(&self.noWeapon, left, top);
@@ -118,10 +118,10 @@ fn drawLife(self: @This(), display: *tge.Display) void {
     const fullRows: usize = @intCast(@divFloor(life, 2));
     for (bottom - fullRows..bottom) |uy| {
         const y: isize = @intCast(uy);
-        display.text(6, y, ":::::");
+        display.text(6, y, ":::::", .red);
     }
     if (@mod(life, 2) == 1)
-        display.text(6, @as(isize, @intCast(bottom - fullRows - 1)), ".....");
+        display.text(6, @as(isize, @intCast(bottom - fullRows - 1)), ".....", .red);
     if (life < 10) {
         display.put(3, 34, '0' + life, .white);
     } else {
