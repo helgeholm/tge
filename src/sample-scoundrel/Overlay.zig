@@ -44,13 +44,13 @@ pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
         for (0..@intCast(display.height)) |y| {
             for (0..@intCast(display.width)) |x| {
                 if (r.intRangeLessThan(u8, 0, 4) == 0)
-                    display.put(@intCast(x), @intCast(y), ' ');
+                    display.put(@intCast(x), @intCast(y), ' ', .white);
             }
         };
     if (self.isHelping)
         display.putImage(&self.help, 7, 2);
     if (self.isWinning)
-        display.putImage(&self.win, 39, 20);
+        display.putImage(&self.win, 39, 19);
     if (self.isLosing)
-        display.putImage(&self.dead, 39, 20);
+        display.putImage(&self.dead, 40, 18);
 }

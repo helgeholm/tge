@@ -9,4 +9,14 @@
     \\|    A    |
     \\|_________|
     ,
+    .color =
+    \\...........
+    \\.bbbbbbbbb.
+    \\.bbbyyybbb.
+    \\.bbbwbwbbb.
+    \\.bbbbwbbbb.
+    \\.bbbbbbbbb.
+    \\.bbbbmbbbb.
+    \\...........
+    ,
 }

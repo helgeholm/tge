@@ -9,4 +9,14 @@
     \\|    T    |
     \\|_________|
     ,
+    .color =
+    \\...........
+    \\.bbbbbbbbb.
+    \\.bbbbbbbbb.
+    \\.bbbwbwbbb.
+    \\.bbbbwbbbb.
+    \\.bbbbbbbbb.
+    \\.bbbbbbbbb.
+    \\...........
+    ,
 }

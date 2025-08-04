@@ -104,7 +104,7 @@ fn drawWeapon(self: @This(), display: *tge.Display) void {
         if (self.readied) {
             display.text(left + 2, top + 10, "Sheathe");
         } else {
-            display.putImage(&self.sheath, left, top + 3);
+            display.putImage(&self.sheath, left + 1, top + 2);
             display.text(left + 3, top + 10, "Draw");
         }
     } else {
@@ -123,10 +123,10 @@ fn drawLife(self: @This(), display: *tge.Display) void {
     if (@mod(life, 2) == 1)
         display.text(6, @as(isize, @intCast(bottom - fullRows - 1)), ".....");
     if (life < 10) {
-        display.put(3, 34, '0' + life);
+        display.put(3, 34, '0' + life, .white);
     } else {
-        display.put(3, 34, '0' + @divFloor(life, 10));
-        display.put(3, 35, '0' + @mod(life, 10));
+        display.put(3, 34, '0' + @divFloor(life, 10), .white);
+        display.put(3, 35, '0' + @mod(life, 10), .white);
     }
 }
 

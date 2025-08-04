@@ -77,11 +77,25 @@ pub inline fn text(self: *@This(), x: isize, y: isize, txt: []const u8) void {
     @memcpy(self.data[@intCast(tpos)..@intCast(tpos + txtEnd - txtStart)], txt[@intCast(txtStart)..@intCast(txtEnd)]);
 }
 
-pub inline fn put(self: *@This(), x: isize, y: isize, c: u8) void {
+pub inline fn put(self: *@This(), x: isize, y: isize, c: u8, color: Image.Color) void {
     if (y < 0 or y >= self.height) return;
     if (x < 0 or x >= self.width) return;
     const tpos: usize = @intCast(@as(isize, @intCast(self.width)) * y + x);
     self.data[tpos] = c;
+    self.color[tpos] = color;
+}
+
+pub inline fn colorArea(self: *@This(), x: isize, y: isize, width: isize, height: isize, color: Image.Color) void {
+    const lx: usize = @intCast(@max(0, x));
+    const ly: usize = @intCast(@max(0, y));
+    const hx: usize = @intCast(@min(self.width - 1, x + width));
+    const hy: usize = @intCast(@min(self.height - 1, y + height));
+    for (ly..hy) |uy| {
+        for (lx..hx) |ux| {
+            const tpos: usize = @as(usize, @intCast(self.width)) * uy + ux;
+            self.color[tpos] = color;
+        }
+    }
 }
 
 pub fn putImage(self: *@This(), image: *const Image, x: isize, y: isize) void {

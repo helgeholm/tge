@@ -1,10 +1,19 @@
 .{
     .transparency = '.',
     .content =
-    \\.__________.
-    \\|\        /|
-    \\|  WEAPON  |
-    \\| SHEATHED |
-    \\|/________\|
+    \\////////////
+    \\////////////
+    \\// WEAPON //
+    \\//SHEATHED//
+    \\////////////
+    \\////////////
+    ,
+    .color =
+    \\yyrryyrryyrr
+    \\yrryyrryyrry
+    \\rrwwwwwwwwyy
+    \\rywwwwwwwwyr
+    \\yyrryyrryyrr
+    \\yrryyrryyrry
     ,
 }

@@ -125,7 +125,7 @@ pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
             };
             display.text(x + 2, top + 10, action);
             display.text(x + 4, top + 9, "[ ]");
-            display.put(x + 5, top + 9, roomActionKeys[i] - 32);
+            display.put(x + 5, top + 9, roomActionKeys[i] - 32, .white);
         }
     }
 }
