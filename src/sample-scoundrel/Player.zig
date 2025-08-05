@@ -51,10 +51,6 @@ pub fn grabWeapon(self: *@This(), card: Deck.Card) void {
     self.bodies.clearRetainingCapacity();
 }
 
-pub fn win(self: *@This()) void {
-    self.background.message("Yay you wan!", .{});
-}
-
 pub fn heal(self: *@This(), strength: i6) void {
     self.life = @min(20, self.life + strength);
     self.background.message("You heal for {d}", .{strength});
@@ -102,10 +98,10 @@ fn drawWeapon(self: @This(), display: *tge.Display) void {
         }
         display.text(left + 2, top + 9, "[SPACE]", .strong_white);
         if (self.readied) {
-            display.text(left + 2, top + 10, "Sheathe", .strong_white);
+            display.text(left + 2, top + 10, "Sheathe", .white);
         } else {
             display.putImage(&self.sheath, left + 1, top + 2);
-            display.text(left + 3, top + 10, "Draw", .strong_white);
+            display.text(left + 3, top + 10, "Draw", .white);
         }
     } else {
         display.putImage(&self.noWeapon, left, top);
@@ -118,15 +114,15 @@ fn drawLife(self: @This(), display: *tge.Display) void {
     const fullRows: usize = @intCast(@divFloor(life, 2));
     for (bottom - fullRows..bottom) |uy| {
         const y: isize = @intCast(uy);
-        display.text(6, y, ":::::", .red);
+        display.text(6, y, ":::::", .strong_red);
     }
     if (@mod(life, 2) == 1)
-        display.text(6, @as(isize, @intCast(bottom - fullRows - 1)), ".....", .red);
+        display.text(6, @as(isize, @intCast(bottom - fullRows - 1)), ".....", .strong_red);
     if (life < 10) {
-        display.put(3, 34, '0' + life, .white);
+        display.put(3, 34, '0' + life, .strong_white);
     } else {
-        display.put(3, 34, '0' + @divFloor(life, 10), .white);
-        display.put(3, 35, '0' + @mod(life, 10), .white);
+        display.put(3, 34, '0' + @divFloor(life, 10), .strong_white);
+        display.put(3, 35, '0' + @mod(life, 10), .strong_white);
     }
 }
 

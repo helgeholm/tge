@@ -5,8 +5,18 @@ pub const Card = struct {
     suit: enum { club, diamond, heart, spade },
     strength: i6, // valid for arithmetic range -31,+32
     image: tge.Image,
+    anim: u16 = 0,
     pub fn draw(self: @This(), x: isize, y: isize, display: *tge.Display) void {
         display.putImage(&self.image, x, y);
+        if (self.anim < 10) {
+            switch (self.suit) {
+                .club, .spade => {
+                    display.put(x + 4, y + 3, ' ', .white);
+                    display.put(x + 6, y + 3, ' ', .white);
+                },
+                else => {},
+            }
+        }
     }
     pub fn drawDead(self: @This(), x: isize, y: isize, display: *tge.Display) void {
         display.putImage(&self.image, x, y);
@@ -45,6 +55,16 @@ pub fn deinit(self: *@This(), alloc: std.mem.Allocator) void {
     }
 }
 
+pub fn tick(ptr: *anyopaque, _: *[256]bool) void {
+    const self: *@This() = @ptrCast(@alignCast(ptr));
+    for (&self.cards) |*c| {
+        if (c.anim == 0)
+            c.anim = self.random.intRangeLessThanBiased(u16, 60, 600);
+        c.anim -= 1;
+    }
+}
+
+random: std.Random,
 cards: [44]Card = .{
     .{
         .suit = .club,

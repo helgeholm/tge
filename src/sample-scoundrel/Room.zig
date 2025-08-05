@@ -98,8 +98,10 @@ pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
             self.background.message("You skip to a new room", .{});
         }
     }
-    if (self.cardsRemaining() == 0 and !self.overlay.isLosing)
+    if (self.cardsRemaining() == 0 and !self.overlay.isLosing) {
+        self.background.message("You have cleared the dungeon!", .{});
         self.overlay.isWinning = true;
+    }
 }
 
 fn cardsRemaining(self: @This()) u3 {
@@ -123,7 +125,7 @@ pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
                 .spade, .club => " Fight",
                 .diamond => " Wield",
             };
-            display.text(x + 2, top + 10, action, .strong_white);
+            display.text(x + 2, top + 10, action, .white);
             display.text(x + 4, top + 9, "[ ]", .strong_white);
             display.put(x + 5, top + 9, roomActionKeys[i] - 32, .strong_white);
         }

@@ -5,7 +5,7 @@ const ImageSource = struct {
     content: []const u8,
     color: ?[]const u8 = null,
     palette: Palette = .{
-        .symbol = ".lrgybmcw",
+        .symbol = ".lrgybmcwG",
         .color = &.{
             .white,
             .strong_black,
@@ -16,6 +16,7 @@ const ImageSource = struct {
             .magenta,
             .cyan,
             .strong_white,
+            .strong_green,
         },
     },
 };

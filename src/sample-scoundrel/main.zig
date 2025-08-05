@@ -29,7 +29,7 @@ pub fn main() !void {
     var discards = Discards{ .allocator = gpa.allocator(), .random = rng.random() };
     discards.init();
     defer discards.deinit();
-    var deck = Deck{};
+    var deck = Deck{ .random = rng.random() };
     deck.init(gpa.allocator());
     defer deck.deinit(gpa.allocator());
     var dg = Dungeon{ .random = rng.random(), .deck = &deck, .allocator = gpa.allocator() };
@@ -40,6 +40,7 @@ pub fn main() !void {
     defer p.deinit();
     var rm = Room{ .overlay = &overlay, .background = &bg, .dungeon = &dg, .player = &p, .random = rng.random(), .discards = &discards };
     rm.startNewGame();
+    t.addAsObject(&deck);
     t.addAsObject(&bg);
     t.addAsObject(&discards);
     t.addAsObject(&dg);
