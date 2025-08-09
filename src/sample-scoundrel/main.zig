@@ -20,6 +20,17 @@ const Game = struct {
     player: Player = undefined,
     discards: Discards = undefined,
     overlay: Overlay = undefined,
+    pub fn init(self: *Game, bus: MainBus) void {
+        inline for (@typeInfo(Game).@"struct".fields) |field| {
+            @field(self, field.name) = field.type{ .bus = bus };
+            @field(self, field.name).init();
+        }
+    }
+    pub fn deinit(self: *Game) void {
+        inline for (@typeInfo(Game).@"struct".fields) |field| {
+            @field(self, field.name).deinit();
+        }
+    }
 };
 
 pub fn main() !void {
@@ -33,45 +44,16 @@ pub fn main() !void {
     defer t.deinit();
 
     var game = Game{};
-    const bus = MainBus{
+    var bus = MainBus{
         .ptr = &game,
         .rng = random.random(),
         .alloc = gpa.allocator(),
-        .vtable = .{
-            .appendMessage = appendMessage,
-            .getCards = getCards,
-            .discard = discard,
-            .isBlockedByModal = isBlockedByModal,
-            .setLost = setLost,
-            .setWon = setWon,
-            .setHelping = setHelping,
-            .grabWeapon = grabWeapon,
-            .drawFromDungeon = drawFromDungeon,
-            .putAtBottomOfDungeon = putAtBottomOfDungeon,
-            .startNewGame = startNewGame,
-            .fight = fight,
-            .heal = heal,
-        },
     };
-    game.overlay = Overlay{ .bus = bus };
-    game.background = Background{ .bus = bus };
-    game.discards = Discards{ .bus = bus };
-    game.deck = Deck{ .bus = bus };
-    game.dungeon = Dungeon{ .bus = bus };
-    game.player = Player{ .bus = bus };
-    game.room = Room{ .bus = bus };
-    game.player.init();
-    game.overlay.init();
-    game.background.init();
-    game.discards.init();
-    game.deck.init();
-    game.dungeon.init();
-    defer game.player.deinit();
-    defer game.overlay.deinit();
-    defer game.background.deinit();
-    defer game.discards.deinit();
-    defer game.deck.deinit();
-    defer game.dungeon.deinit();
+    inline for (@typeInfo(@TypeOf(bus.vtable)).@"struct".fields) |field| {
+        @field(bus.vtable, field.name) = @field(@This(), field.name);
+    }
+    game.init(bus);
+    defer game.deinit();
     t.addAsObject(&game.deck);
     t.addAsObject(&game.background);
     t.addAsObject(&game.discards);

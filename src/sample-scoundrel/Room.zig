@@ -14,6 +14,9 @@ const roomActionKeys: [4]u8 = .{ 'q', 'w', 'e', 'r' };
 const top: isize = 15;
 const left: isize = 24;
 
+pub fn init(_: *@This()) void {}
+pub fn deinit(_: *@This()) void {}
+
 pub fn pull(self: *@This()) void {
     for (0..4) |i| {
         if (self.cards[i] == null)
