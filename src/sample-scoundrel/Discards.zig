@@ -1,7 +1,8 @@
 const std = @import("std");
 const tge = @import("tge");
 
-const Deck = @import("Deck.zig");
+const Card = @import("Card.zig");
+const MainBus = @import("MainBus.zig");
 
 const top: isize = 0;
 const left: isize = 0;
@@ -9,10 +10,10 @@ const height: isize = 18;
 const width: isize = 100;
 
 const DiscardedCard = struct {
-    card: Deck.Card,
+    card: *Card,
     x: isize,
     y: isize,
-    pub fn init(random: std.Random, card: Deck.Card, w: isize, h: isize) DiscardedCard {
+    pub fn init(random: std.Random, card: *Card, w: isize, h: isize) DiscardedCard {
         return .{
             .card = card,
             .x = random.intRangeLessThan(isize, left, w - card.image.width),
@@ -24,17 +25,16 @@ const DiscardedCard = struct {
     }
 };
 
-random: std.Random,
+bus: MainBus,
 cards: std.ArrayList(DiscardedCard) = undefined,
-allocator: std.mem.Allocator,
 
-pub fn discard(self: *@This(), card: Deck.Card) void {
+pub fn discard(self: *@This(), card: *Card) void {
     const new = self.cards.addOne() catch unreachable;
-    new.* = DiscardedCard.init(self.random, card, width, height);
+    new.* = DiscardedCard.init(self.bus.rng, card, width, height);
 }
 
 pub fn init(self: *@This()) void {
-    self.cards = std.ArrayList(DiscardedCard).init(self.allocator);
+    self.cards = std.ArrayList(DiscardedCard).init(self.bus.alloc);
 }
 
 pub fn deinit(self: *@This()) void {

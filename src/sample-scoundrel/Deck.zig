@@ -1,57 +1,17 @@
 const std = @import("std");
 const tge = @import("tge");
+const Card = @import("Card.zig");
 
-pub const Card = struct {
-    suit: enum { club, diamond, heart, spade },
-    strength: i6, // valid for arithmetic range -31,+32
-    image: tge.Image,
-    anim: u16 = 0,
-    pub fn draw(self: @This(), x: isize, y: isize, display: *tge.Display) void {
-        display.putImage(&self.image, x, y);
-        if (self.anim < 10) {
-            switch (self.suit) {
-                .club, .spade => {
-                    display.put(x + 4, y + 3, ' ', .white);
-                    display.put(x + 6, y + 3, ' ', .white);
-                },
-                else => {},
-            }
-        }
-    }
-    pub fn drawDead(self: @This(), x: isize, y: isize, display: *tge.Display) void {
-        display.putImage(&self.image, x, y);
-        switch (self.suit) {
-            .club, .spade => {
-                display.put(x + 4, y + 3, 'x', .white);
-                display.put(x + 6, y + 3, 'x', .white);
-            },
-            .diamond => {
-                display.put(x + 5, y + 1, ' ', .white);
-                display.put(x + 4, y + 2, ' ', .white);
-                display.put(x + 5, y + 2, '_', .white);
-                display.put(x + 4, y + 3, '\\', .white);
-            },
-            .heart => {
-                for (3..8) |ux2| {
-                    const x2: isize = @intCast(ux2);
-                    display.put(x + x2, y + 3, ' ', .white);
-                    display.put(x + x2, y + 4, ' ', .white);
-                }
-            },
-        }
-        display.colorArea(x, y, self.image.width, self.image.height, .white);
-    }
-};
-
-pub fn init(self: *@This(), alloc: std.mem.Allocator) void {
+const MainBus = @import("MainBus.zig");
+pub fn init(self: *@This()) void {
     for (&self.cards) |*c| {
-        c.image.init(alloc);
+        c.image.init(self.bus.alloc);
     }
 }
 
-pub fn deinit(self: *@This(), alloc: std.mem.Allocator) void {
+pub fn deinit(self: *@This()) void {
     for (&self.cards) |*c| {
-        c.image.deinit(alloc);
+        c.image.deinit(self.bus.alloc);
     }
 }
 
@@ -59,12 +19,12 @@ pub fn tick(ptr: *anyopaque, _: *[256]bool) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
     for (&self.cards) |*c| {
         if (c.anim == 0)
-            c.anim = self.random.intRangeLessThanBiased(u16, 60, 600);
+            c.anim = self.bus.rng.intRangeLessThanBiased(u16, 60, 600);
         c.anim -= 1;
     }
 }
 
-random: std.Random,
+bus: MainBus,
 cards: [44]Card = .{
     .{
         .suit = .club,

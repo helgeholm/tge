@@ -1,15 +1,14 @@
 const std = @import("std");
 const tge = @import("tge");
 
-const Deck = @import("Deck.zig");
+const Card = @import("Card.zig");
+const MainBus = @import("MainBus.zig");
 
 const top: isize = 13;
 const left: isize = 6;
 
-random: std.Random,
-deck: *Deck,
-allocator: std.mem.Allocator,
-pile: std.ArrayList(*Deck.Card) = undefined,
+bus: MainBus,
+pile: std.ArrayList(*Card) = undefined,
 imgFull: tge.Image = .{ .source = @import("images/deck_full.zon") },
 imgMedium: tge.Image = .{ .source = @import("images/deck_medium.zon") },
 imgSmall: tge.Image = .{ .source = @import("images/deck_small.zon") },
@@ -32,24 +31,25 @@ pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
 }
 
 pub fn init(self: *@This()) void {
-    self.imgFull.init(self.allocator);
-    self.imgMedium.init(self.allocator);
-    self.imgSmall.init(self.allocator);
-    self.pile = std.ArrayList(*Deck.Card).init(self.allocator);
+    self.imgFull.init(self.bus.alloc);
+    self.imgMedium.init(self.bus.alloc);
+    self.imgSmall.init(self.bus.alloc);
+    self.pile = std.ArrayList(*Card).init(self.bus.alloc);
 }
 
 pub fn reset(self: *@This()) void {
     self.pile.clearRetainingCapacity();
-    for (&self.deck.cards) |*c| {
+    const cards = self.bus.getCards();
+    for (cards) |*c| {
         const added = self.pile.addOne() catch unreachable;
         added.* = c;
     }
-    self.random.shuffle(*Deck.Card, self.pile.items);
+    self.bus.rng.shuffle(*Card, self.pile.items);
 }
 
 pub fn deinit(self: *@This()) void {
-    self.imgFull.deinit(self.allocator);
-    self.imgMedium.deinit(self.allocator);
-    self.imgSmall.deinit(self.allocator);
+    self.imgFull.deinit(self.bus.alloc);
+    self.imgMedium.deinit(self.bus.alloc);
+    self.imgSmall.deinit(self.bus.alloc);
     self.pile.deinit();
 }

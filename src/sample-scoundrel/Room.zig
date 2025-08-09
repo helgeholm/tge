@@ -1,22 +1,14 @@
 const std = @import("std");
 const tge = @import("tge");
 
-const Deck = @import("Deck.zig");
-const Dungeon = @import("Dungeon.zig");
-const Player = @import("Player.zig");
-const Background = @import("Background.zig");
-const Discards = @import("Discards.zig");
-const Overlay = @import("Overlay.zig");
+const Card = @import("Card.zig");
+const MainBus = @import("MainBus.zig");
 
-random: std.Random,
-player: *Player,
-dungeon: *Dungeon,
-background: *Background,
-discards: *Discards,
-overlay: *Overlay,
-cards: [4]?*Deck.Card = .{ null, null, null, null },
+bus: MainBus,
+cards: [4]?*Card = .{ null, null, null, null },
 hasDrunk: bool = false,
 hasSkipped: bool = false,
+hasDeclaredWin: bool = false,
 
 const roomActionKeys: [4]u8 = .{ 'q', 'w', 'e', 'r' };
 const top: isize = 15;
@@ -25,52 +17,45 @@ const left: isize = 24;
 pub fn pull(self: *@This()) void {
     for (0..4) |i| {
         if (self.cards[i] == null)
-            self.cards[i] = self.dungeon.pile.pop();
+            self.cards[i] = self.bus.drawFromDungeon();
     }
     self.hasDrunk = false;
 }
 
-pub fn startNewGame(self: *@This()) void {
-    self.player.reset();
-    self.discards.reset();
-    self.dungeon.reset();
-    self.overlay.isWinning = false;
-    self.overlay.isLosing = false;
+pub fn reset(self: *@This()) void {
     for (0..4) |i| {
         self.cards[i] = null;
     }
     self.hasDrunk = false;
     self.hasSkipped = false;
+    self.hasDeclaredWin = false;
     self.pull();
-    self.background.message("New game started!", .{});
 }
 
 pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
-    if (keys['k']) self.overlay.isHelping = false;
-    if (self.overlay.isHelping) return;
-    if (keys['n']) self.startNewGame();
-    if (self.overlay.paused()) return;
-    if (keys['h']) self.overlay.isHelping = true;
+    if (keys['n']) self.bus.startNewGame();
+    if (self.bus.isBlockedByModal()) return;
+    if (keys['h']) self.bus.setHelping();
     for (0..4) |a| {
         if (keys[roomActionKeys[a]]) if (self.cards[a]) |c| {
             switch (c.suit) {
                 .diamond => {
-                    self.player.grabWeapon(c.*);
+                    self.bus.grabWeapon(c);
                     self.cards[a] = null;
                 },
                 .heart => {
                     if (self.hasDrunk)
-                        self.background.message("You discard a health potion ({d})", .{c.strength})
+                        self.bus.message("You discard a health potion ({d})", .{c.strength})
                     else
-                        self.player.heal(c.strength);
+                        self.bus.heal(c.strength);
 
                     self.hasDrunk = true;
-                    self.discards.discard(c.*);
+                    self.bus.discard(c);
                     self.cards[a] = null;
                 },
                 .club, .spade => {
-                    if (self.player.fight(c.*))
+                    if (self.bus.fight(c))
                         self.cards[a] = null;
                 },
             }
@@ -82,25 +67,26 @@ pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
     }
     if (keys['s']) {
         if (self.hasSkipped) {
-            self.background.message("Can't skip two rooms in a row!", .{});
+            self.bus.message("Can't skip two rooms in a row!", .{});
         } else if (self.cardsRemaining() < 4) {
-            self.background.message("Can only skip full rooms!", .{});
+            self.bus.message("Can only skip full rooms!", .{});
         } else {
             self.hasSkipped = true;
-            self.random.shuffle(?*Deck.Card, &self.cards);
+            self.bus.rng.shuffle(?*Card, &self.cards);
             for (0..4) |i| {
                 if (self.cards[i]) |c| {
-                    self.dungeon.pile.insertAssumeCapacity(0, c);
+                    self.bus.putAtBottomOfDungeon(c);
                     self.cards[i] = null;
                 }
             }
             self.pull();
-            self.background.message("You skip to a new room", .{});
+            self.bus.message("You skip to a new room", .{});
         }
     }
-    if (self.cardsRemaining() == 0 and !self.overlay.isLosing) {
-        self.background.message("You have cleared the dungeon!", .{});
-        self.overlay.isWinning = true;
+    if (self.cardsRemaining() == 0 and !self.hasDeclaredWin) {
+        self.bus.message("You have cleared the dungeon!", .{});
+        self.bus.setWon();
+        self.hasDeclaredWin = true;
     }
 }
 

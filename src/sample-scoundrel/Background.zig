@@ -2,29 +2,26 @@ const std = @import("std");
 
 const tge = @import("tge");
 const Display = tge.Display;
+const MainBus = @import("MainBus.zig");
 
-messageBuf: [1024]u8 = undefined,
-messageBufP: usize = 0,
+bus: MainBus,
 messageSlice: [11][]const u8 = .{ "", "", "", "", "", "", "", "", "", "", "" },
 messageNewTTL: usize = 0,
 board: tge.Image = .{ .source = @import("images/board.zon") },
 
-pub fn init(self: *@This(), alloc: std.mem.Allocator) void {
-    self.board.init(alloc);
+pub fn init(self: *@This()) void {
+    self.board.init(self.bus.alloc);
 }
 
-pub fn deinit(self: *@This(), alloc: std.mem.Allocator) void {
-    self.board.deinit(alloc);
+pub fn deinit(self: *@This()) void {
+    self.board.deinit(self.bus.alloc);
 }
 
-pub fn message(self: *@This(), comptime fmt: []const u8, args: anytype) void {
+pub fn message(self: *@This(), fmted: []const u8) void {
     for (0..10) |i| {
         self.messageSlice[i] = self.messageSlice[i + 1];
     }
-    const fmted = std.fmt.bufPrint(self.messageBuf[self.messageBufP..], fmt, args) catch unreachable;
     self.messageSlice[10] = fmted;
-    self.messageBufP += fmted.len;
-    if (self.messageBufP > 900) self.messageBufP = 0;
     self.messageNewTTL = 59;
 }
 

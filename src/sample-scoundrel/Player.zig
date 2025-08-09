@@ -1,26 +1,21 @@
 const std = @import("std");
 const tge = @import("tge");
 
-const Deck = @import("Deck.zig");
-const Background = @import("Background.zig");
-const Discards = @import("Discards.zig");
-const Overlay = @import("Overlay.zig");
+const MainBus = @import("MainBus.zig");
+const Card = @import("Card.zig");
 
+bus: MainBus,
 life: i8 = 20,
-weapon: ?Deck.Card = null,
+weapon: ?*Card = null,
 readied: bool = true,
-allocator: std.mem.Allocator,
-bodies: std.ArrayList(Deck.Card) = undefined,
-background: *Background,
-discards: *Discards,
-overlay: *Overlay,
+bodies: std.ArrayList(*Card) = undefined,
 noWeapon: tge.Image = .{ .source = @import("images/no_weapon.zon") },
 sheath: tge.Image = .{ .source = @import("images/not_drawn_weapon.zon") },
 
 pub fn init(self: *@This()) void {
-    self.sheath.init(self.allocator);
-    self.noWeapon.init(self.allocator);
-    self.bodies = std.ArrayList(Deck.Card).init(self.allocator);
+    self.sheath.init(self.bus.alloc);
+    self.noWeapon.init(self.bus.alloc);
+    self.bodies = std.ArrayList(*Card).init(self.bus.alloc);
 }
 
 pub fn reset(self: *@This()) void {
@@ -32,36 +27,36 @@ pub fn reset(self: *@This()) void {
 
 pub fn deinit(self: *@This()) void {
     self.bodies.deinit();
-    self.sheath.deinit(self.allocator);
-    self.noWeapon.deinit(self.allocator);
+    self.sheath.deinit(self.bus.alloc);
+    self.noWeapon.deinit(self.bus.alloc);
 }
 
-pub fn grabWeapon(self: *@This(), card: Deck.Card) void {
+pub fn grabWeapon(self: *@This(), card: *Card) void {
     if (self.weapon) |w| {
-        self.background.message("You replace your weapon ({d}) with a new ({d})", .{ w.strength, card.strength });
-        self.discards.discard(w);
+        self.bus.message("You replace your weapon ({d}) with a new ({d})", .{ w.strength, card.strength });
+        self.bus.discard(w);
     } else {
-        self.background.message("You grab a weapon ({d})", .{card.strength});
+        self.bus.message("You grab a weapon ({d})", .{card.strength});
     }
     self.weapon = card;
     self.readied = true;
     for (self.bodies.items) |b| {
-        self.discards.discard(b);
+        self.bus.discard(b);
     }
     self.bodies.clearRetainingCapacity();
 }
 
 pub fn heal(self: *@This(), strength: i6) void {
     self.life = @min(20, self.life + strength);
-    self.background.message("You heal for {d}", .{strength});
+    self.bus.message("You heal for {d}", .{strength});
 }
 
-pub fn fight(self: *@This(), card: Deck.Card) bool {
+pub fn fight(self: *@This(), card: *Card) bool {
     if (self.readied and self.weapon != null) {
         const w = self.weapon.?;
         if (self.bodies.getLastOrNull()) |b| {
             if (card.strength >= b.strength) {
-                self.background.message("Weapon cannot fight enemies {d} or above!", .{b.strength});
+                self.bus.message("Weapon cannot fight enemies {d} or above!", .{b.strength});
                 return false;
             }
         }
@@ -71,16 +66,16 @@ pub fn fight(self: *@This(), card: Deck.Card) bool {
             self.life -= (card.strength - w.strength);
     } else {
         self.life -= card.strength;
-        self.discards.discard(card);
+        self.bus.discard(card);
     }
     if (self.life <= 0)
-        self.overlay.isLosing = true;
+        self.bus.setLost();
     return true;
 }
 
 pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
-    if (self.overlay.isHelping) return;
+    if (self.bus.isBlockedByModal()) return;
     if (keys[' ']) {
         self.readied = !self.readied;
     }

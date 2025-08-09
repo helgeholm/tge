@@ -1,10 +1,11 @@
 const std = @import("std");
 const tge = @import("tge");
+const MainBus = @import("MainBus.zig");
 
+bus: MainBus,
 isHelping: bool = false,
 isWinning: bool = false,
 isLosing: bool = false,
-random: std.Random,
 shadeSeed: u64 = 0,
 shadeTick: u16 = 0,
 help: tge.Image = .{ .source = @import("images/help.zon") },
@@ -15,23 +16,24 @@ pub fn paused(self: *@This()) bool {
     return self.isHelping or self.isWinning or self.isLosing;
 }
 
-pub fn init(self: *@This(), alloc: std.mem.Allocator) void {
-    self.help.init(alloc);
-    self.win.init(alloc);
-    self.dead.init(alloc);
+pub fn init(self: *@This()) void {
+    self.help.init(self.bus.alloc);
+    self.win.init(self.bus.alloc);
+    self.dead.init(self.bus.alloc);
 }
 
-pub fn deinit(self: *@This(), alloc: std.mem.Allocator) void {
-    self.help.deinit(alloc);
-    self.win.deinit(alloc);
-    self.dead.deinit(alloc);
+pub fn deinit(self: *@This()) void {
+    self.help.deinit(self.bus.alloc);
+    self.win.deinit(self.bus.alloc);
+    self.dead.deinit(self.bus.alloc);
 }
 
-pub fn tick(ptr: *anyopaque, _: *[256]bool) void {
+pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
+    if (keys['k']) self.isHelping = false;
     if (self.shadeTick == 0) {
         self.shadeTick = 20;
-        self.shadeSeed = self.random.int(u64);
+        self.shadeSeed = self.bus.rng.int(u64);
     }
     self.shadeTick -= 1;
 }
