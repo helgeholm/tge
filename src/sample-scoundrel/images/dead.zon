@@ -10,13 +10,23 @@
     \\ \/  :(   :(    :(  \/ 
     ,
     .color =
-    \\wwwwwwwwwwwwwwwwwwwwwww
-    \\wwwwwwwwwwwwwwwwwwwwwww
-    \\wwmmmmmmmmmmmmmmmmmmmww
+    \\ wwwwwwwwwwwwwwwwwwwww 
+    \\ wwwwwwwwwwwwwwwwwwwww 
+    \\ wmmmmmmmmmmmmmmmmmmmw 
     \\wwwwwwwwwwwwwwwwwwwwwww
     \\wwwwwwwwwwwwwwwwwwwwwww
     \\w.....................w
     \\wwwwwwwwwwwwwwwwwwwwwww
-    \\wwwww.............wwwww
+    \\ ww  bb   bb    bb  ww 
+    ,
+    .background =
+    \\kkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkk
     ,
 }

@@ -12,6 +12,7 @@ state: DisplayState = .unready,
 winsz: std.posix.winsize = undefined,
 data: []u8,
 color: []Image.Color,
+background: []Image.Color,
 
 pub fn init(allocator: std.mem.Allocator, config: Config) !@This() {
     var r = @This(){
@@ -19,6 +20,7 @@ pub fn init(allocator: std.mem.Allocator, config: Config) !@This() {
         .height = config.height,
         .data = try allocator.alloc(u8, @intCast(config.width * config.height)),
         .color = try allocator.alloc(Image.Color, @intCast(config.width * config.height)),
+        .background = try allocator.alloc(Image.Color, @intCast(config.width * config.height)),
     };
     r.read_winsz();
     try stdout.writeAll("\x1b[?25l");
@@ -43,6 +45,7 @@ fn read_winsz(self: *@This()) void {
 pub fn clear(self: *@This()) void {
     @memset(self.data, ' ');
     @memset(self.color, .white);
+    @memset(self.background, .black);
 }
 
 fn draw_unready(self: @This()) !void {
@@ -88,11 +91,24 @@ pub inline fn put(self: *@This(), x: isize, y: isize, c: u8, color: Image.Color)
     self.color[tpos] = color;
 }
 
+pub inline fn backgroundArea(self: *@This(), x: isize, y: isize, width: isize, height: isize, color: Image.Color) void {
+    const lx: usize = @intCast(@max(0, x));
+    const ly: usize = @intCast(@max(0, y));
+    const hx: usize = @intCast(@min(self.width, x + width));
+    const hy: usize = @intCast(@min(self.height, y + height));
+    for (ly..hy) |uy| {
+        for (lx..hx) |ux| {
+            const tpos: usize = @as(usize, @intCast(self.width)) * uy + ux;
+            self.background[tpos] = color;
+        }
+    }
+}
+
 pub inline fn colorArea(self: *@This(), x: isize, y: isize, width: isize, height: isize, color: Image.Color) void {
     const lx: usize = @intCast(@max(0, x));
     const ly: usize = @intCast(@max(0, y));
-    const hx: usize = @intCast(@min(self.width - 1, x + width));
-    const hy: usize = @intCast(@min(self.height - 1, y + height));
+    const hx: usize = @intCast(@min(self.width, x + width));
+    const hy: usize = @intCast(@min(self.height, y + height));
     for (ly..hy) |uy| {
         for (lx..hx) |ux| {
             const tpos: usize = @as(usize, @intCast(self.width)) * uy + ux;
@@ -110,9 +126,13 @@ pub fn putImage(self: *@This(), image: *const Image, x: isize, y: isize) void {
             if (tx < 0 or tx >= self.width) continue;
             const spos: usize = @as(usize, @intCast(image.width)) * sy + sx;
             const tpos: usize = @intCast(@as(isize, @intCast(self.width)) * ty + tx);
-            if (image.data[spos] < 32) continue;
-            self.data[tpos] = image.data[spos];
-            self.color[tpos] = image.color[spos];
+            if (image.color[spos] != .transparent) {
+                if (image.data[spos] >= 32)
+                    self.data[tpos] = image.data[spos];
+                self.color[tpos] = image.color[spos];
+            }
+            if (image.background[spos] != .transparent)
+                self.background[tpos] = image.background[spos];
         }
     }
 }
@@ -122,24 +142,47 @@ pub fn print(self: *@This(), x: isize, y: isize, comptime fmt: []const u8, args:
     _ = std.fmt.bufPrint(self.data[pos..], fmt, args) catch unreachable;
 }
 
-inline fn setColor(color: Image.Color) []const u8 {
+inline fn fgColor(color: Image.Color) []const u8 {
     return switch (color) {
-        .black => "\x1b[0;30m",
-        .red => "\x1b[0;31m",
-        .green => "\x1b[0;32m",
-        .yellow => "\x1b[0;33m",
-        .blue => "\x1b[0;34m",
-        .magenta => "\x1b[0;35m",
-        .cyan => "\x1b[0;36m",
-        .white => "\x1b[0;37m",
-        .strong_black => "\x1b[1;30m",
-        .strong_red => "\x1b[1;31m",
-        .strong_green => "\x1b[1;32m",
-        .strong_yellow => "\x1b[1;33m",
-        .strong_blue => "\x1b[1;34m",
-        .strong_magenta => "\x1b[1;35m",
-        .strong_cyan => "\x1b[1;36m",
-        .strong_white => "\x1b[1;37m",
+        .transparent => @panic("should not be called"),
+        .black => "\x1b[30m",
+        .red => "\x1b[31m",
+        .green => "\x1b[32m",
+        .yellow => "\x1b[33m",
+        .blue => "\x1b[34m",
+        .magenta => "\x1b[35m",
+        .cyan => "\x1b[36m",
+        .white => "\x1b[37m",
+        .hi_black => "\x1b[90m",
+        .hi_red => "\x1b[91m",
+        .hi_green => "\x1b[92m",
+        .hi_yellow => "\x1b[93m",
+        .hi_blue => "\x1b[94m",
+        .hi_magenta => "\x1b[95m",
+        .hi_cyan => "\x1b[96m",
+        .hi_white => "\x1b[97m",
+    };
+}
+
+inline fn bgColor(color: Image.Color) []const u8 {
+    return switch (color) {
+        .transparent => @panic("should not be called"),
+        .black => "\x1b[40m",
+        .red => "\x1b[41m",
+        .green => "\x1b[42m",
+        .yellow => "\x1b[43m",
+        .blue => "\x1b[44m",
+        .magenta => "\x1b[45m",
+        .cyan => "\x1b[46m",
+        .white => "\x1b[47m",
+        .hi_black => "\x1b[100m",
+        .hi_red => "\x1b[101m",
+        .hi_green => "\x1b[102m",
+        .hi_yellow => "\x1b[103m",
+        .hi_blue => "\x1b[104m",
+        .hi_magenta => "\x1b[105m",
+        .hi_cyan => "\x1b[106m",
+        .hi_white => "\x1b[107m",
     };
 }
 
@@ -150,14 +193,18 @@ pub fn draw(self: *@This()) void {
     }
     stdout.writeAll("\x1b[1;1H\x1b[0;0m") catch unreachable;
     var color: Image.Color = .white;
+    var background: Image.Color = .black;
     var pos: usize = 0;
-    stdout.writeAll(setColor(color)) catch unreachable;
+    stdout.writeAll(fgColor(color)) catch unreachable;
+    stdout.writeAll(bgColor(background)) catch unreachable;
     while (pos < self.data.len) {
         const endLine = pos + @as(usize, @intCast(self.width));
         while (pos < endLine) {
-            if (self.color[pos] != color) {
+            if (self.color[pos] != color or self.background[pos] != background) {
                 color = self.color[pos];
-                stdout.writeAll(setColor(color)) catch unreachable;
+                background = self.background[pos];
+                stdout.writeAll(fgColor(color)) catch unreachable;
+                stdout.writeAll(bgColor(background)) catch unreachable;
             }
             stdout.writeByte(self.data[pos]) catch unreachable;
             pos += 1;

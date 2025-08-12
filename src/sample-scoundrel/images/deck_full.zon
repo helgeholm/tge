@@ -1,27 +1,35 @@
 .{
-    .transparency = '.',
     .content =
-    \\ _________ ..
-    \\|         |\.
-    \\|  S C O  ||\
-    \\|         |||
-    \\|  U N D  |||
-    \\|         |||
-    \\|  R E L  |||
-    \\|_________|||
-    \\`=========='|
-    \\.`=========='
+    \\         \..
+    \\  S C O   \.
+    \\           \
+    \\  U N D    |
+    \\           |
+    \\  R E L    |
+    \\           |
+    \\\        \ |
+    \\.\________\|
     ,
     .color =
-    \\.............
-    \\.wwwwwwwww...
-    \\.wwwwwwwww...
-    \\.wwwwwwwww...
-    \\.wwwwwwwww...
-    \\.wwwwwwwww...
-    \\.wwwwwwwww...
-    \\.............
-    \\.............
-    \\.............
+    \\yyyyyyyyy.  
+    \\yyyyyyyyy.. 
+    \\yyyyyyyyy...
+    \\yyyyyyyyy...
+    \\yyyyyyyyy...
+    \\yyyyyyyyy...
+    \\yyyyyyyyy...
+    \\............
+    \\ ...........
+    ,
+    .background =
+    \\gggggggggkkk
+    \\gggggggggkkk
+    \\gggggggggkkk
+    \\gggggggggkkk
+    \\gggggggggkkk
+    \\gggggggggkkk
+    \\gggggggggkkk
+    \\kkkkkkkkkkkk
+    \\kkkkkkkkkkkk
     ,
 }

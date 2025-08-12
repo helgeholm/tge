@@ -87,11 +87,12 @@ fn drawWeapon(self: @This(), display: *tge.Display) void {
     if (self.weapon) |w| {
         w.draw(left, top, display);
         var bx: isize = left + 4;
-        for (self.bodies.items) |b| {
+        for (0..self.bodies.items.len) |i| {
+            const b = self.bodies.items[i];
             bx += 1;
-            b.drawDead(bx, top, display);
+            b.drawDead(bx, top, display, i < self.bodies.items.len - 1);
         }
-        display.text(left + 2, top + 9, "[SPACE]", .strong_white);
+        display.text(left + 2, top + 9, "[SPACE]", .hi_white);
         if (self.readied) {
             display.text(left + 2, top + 10, "Sheathe", .white);
         } else {
@@ -109,15 +110,15 @@ fn drawLife(self: @This(), display: *tge.Display) void {
     const fullRows: usize = @intCast(@divFloor(life, 2));
     for (bottom - fullRows..bottom) |uy| {
         const y: isize = @intCast(uy);
-        display.text(6, y, ":::::", .strong_red);
+        display.text(6, y, ":::::", .hi_red);
     }
     if (@mod(life, 2) == 1)
-        display.text(6, @as(isize, @intCast(bottom - fullRows - 1)), ".....", .strong_red);
+        display.text(6, @as(isize, @intCast(bottom - fullRows - 1)), ".....", .hi_red);
     if (life < 10) {
-        display.put(3, 34, '0' + life, .strong_white);
+        display.put(3, 34, '0' + life, .hi_white);
     } else {
-        display.put(3, 34, '0' + @divFloor(life, 10), .strong_white);
-        display.put(3, 35, '0' + @mod(life, 10), .strong_white);
+        display.put(3, 34, '0' + @divFloor(life, 10), .hi_white);
+        display.put(3, 35, '0' + @mod(life, 10), .hi_white);
     }
 }
 

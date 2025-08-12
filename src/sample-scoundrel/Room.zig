@@ -115,8 +115,8 @@ pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
                 .diamond => " Wield",
             };
             display.text(x + 2, top + 10, action, .white);
-            display.text(x + 4, top + 9, "[ ]", .strong_white);
-            display.put(x + 5, top + 9, roomActionKeys[i] - 32, .strong_white);
+            display.text(x + 4, top + 9, "[ ]", .hi_white);
+            display.put(x + 5, top + 9, roomActionKeys[i] - 32, .hi_white);
         }
     }
 }

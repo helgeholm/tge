@@ -26,8 +26,8 @@ pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
         display.putImage(&image, left, top);
     var buf: [15]u8 = undefined;
     const txt = std.fmt.bufPrint(&buf, "{d} ", .{self.pile.items.len}) catch undefined;
-    display.put(3, 22, txt[0], .strong_white);
-    display.put(3, 23, txt[1], .strong_white);
+    display.put(3, 22, txt[0], .hi_white);
+    display.put(3, 23, txt[1], .hi_white);
 }
 
 pub fn init(self: *@This()) void {

@@ -87,12 +87,14 @@ fn isBlockedByModal(ptr: *anyopaque) bool {
 
 fn setLost(ptr: *anyopaque) void {
     const game: *Game = @ptrCast(@alignCast(ptr));
-    game.overlay.isLosing = true;
+    if (!game.overlay.isWinning)
+        game.overlay.isLosing = true;
 }
 
 fn setWon(ptr: *anyopaque) void {
     const game: *Game = @ptrCast(@alignCast(ptr));
-    game.overlay.isWinning = true;
+    if (!game.overlay.isLosing)
+        game.overlay.isWinning = true;
 }
 
 fn setHelping(ptr: *anyopaque) void {

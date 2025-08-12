@@ -1,19 +1,26 @@
 .{
-    .transparency = '.',
     .content =
-    \\////////////
-    \\////////////
-    \\// WEAPON //
-    \\//SHEATHED//
-    \\////////////
-    \\////////////
+    \\            
+    \\            
+    \\   WEAPON   
+    \\  SHEATHED  
+    \\            
+    \\            
     ,
     .color =
-    \\yyrryyrryyrr
-    \\yrryyrryyrry
-    \\rrwwwwwwwwyy
-    \\rywwwwwwwwyr
-    \\yyrryyrryyrr
-    \\yrryyrryyrry
+    \\kkkkkkkkkkkk
+    \\kkkkkkkkkkkk
+    \\kkkkkkkkkkkk
+    \\kkkkkkkkkkkk
+    \\kkkkkkkkkkkk
+    \\kkkkkkkkkkkk
+    ,
+    .background =
+    \\ryyyyyyyyyyr
+    \\ryyyyyyyyyyr
+    \\ryyyyyyyyyyr
+    \\ryyyyyyyyyyr
+    \\ryyyyyyyyyyr
+    \\ryyyyyyyyyyr
     ,
 }

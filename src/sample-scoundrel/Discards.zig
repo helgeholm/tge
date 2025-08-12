@@ -21,7 +21,7 @@ const DiscardedCard = struct {
         };
     }
     pub fn draw(self: DiscardedCard, display: *tge.Display) void {
-        self.card.drawDead(self.x, self.y, display);
+        self.card.drawDead(self.x, self.y, display, false);
     }
 };
 

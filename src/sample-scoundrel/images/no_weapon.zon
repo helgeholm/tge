@@ -1,23 +1,29 @@
 .{
-    .transparency = '.',
     .content =
-    \\.  _______.
-    \\ X        |
-    \\|         |
-    \\|   NO    |
-    \\|         |
-    \\| WEAPON  |
-    \\|         |
-    \\|_________|
+    \\X        
+    \\         
+    \\         
+    \\         
+    \\         
+    \\         
+    \\        X
     ,
     .color =
-    \\...........
-    \\...wwwwwww.
-    \\.wwwwwwwww.
-    \\.wwwwwwwww.
-    \\.wwwwwwwww.
-    \\.wwwwwwwww.
-    \\.wwwwwwwww.
-    \\...........
+    \\k........
+    \\.........
+    \\.........
+    \\.........
+    \\.........
+    \\.........
+    \\........k
+    ,
+    .background =
+    \\KKKKKKKKK
+    \\KKKKKKKKK
+    \\KKKKKKKKK
+    \\KKKKKKKKK
+    \\KKKKKKKKK
+    \\KKKKKKKKK
+    \\KKKKKKKKK
     ,
 }

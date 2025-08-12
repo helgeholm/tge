@@ -42,13 +42,16 @@ pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
     var rng = std.Random.Pcg.init(self.shadeSeed);
     const r = rng.random();
-    if (self.paused())
+    if (self.paused()) {
+        display.backgroundArea(0, 0, display.width, display.height, .black);
+        display.colorArea(0, 0, display.width, display.height, .hi_black);
         for (0..@intCast(display.height)) |y| {
             for (0..@intCast(display.width)) |x| {
                 if (r.intRangeLessThan(u8, 0, 4) == 0)
                     display.put(@intCast(x), @intCast(y), ' ', .white);
             }
-        };
+        }
+    }
     if (self.isHelping)
         display.putImage(&self.help, 7, 2);
     if (self.isWinning)

@@ -1,22 +1,29 @@
 .{
     .content =
-    \\   _______ 
-    \\ 5 _   _  |
-    \\| / \_/ \ |
-    \\|  +++++  |
-    \\| \     / |
-    \\|  \   /  |
-    \\|   \ /   |
-    \\|_________|
+    \\5 _   _  
+    \\ / \_/ \ 
+    \\  +++++  
+    \\ \     / 
+    \\  \   /  
+    \\   \ /   
+    \\        5
     ,
     .color =
-    \\...........
-    \\.rrrrrrrrr.
-    \\.rrrrrrrrr.
-    \\.rrwwwwwrr.
-    \\.rrwwwwwrr.
-    \\.rrrrrrrrr.
-    \\.rrrrrrrrr.
-    \\...........
+    \\wwrrrrrrr
+    \\rrrrrrrrr
+    \\rrkkkkkrr
+    \\rrkkkkkrr
+    \\rrrrrrrrr
+    \\rrrrrrrrr
+    \\rrrrrrrww
+    ,
+    .background =
+    \\rrwwwwwww
+    \\wwwwwwwww
+    \\wwwwwwwww
+    \\wwwwwwwww
+    \\wwwwwwwww
+    \\wwwwwwwww
+    \\wwwwwwwrr
     ,
 }

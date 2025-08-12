@@ -41,5 +41,5 @@ pub fn draw(ptr: *anyopaque, display: *Display) void {
         display.text(msgLeft, msgTop + i, self.messageSlice[ui], .white);
     }
     if (@mod(self.messageNewTTL, 20) < 15)
-        display.text(msgLeft, msgTop + 10, self.messageSlice[10], .strong_white);
+        display.text(msgLeft, msgTop + 10, self.messageSlice[10], .hi_white);
 }
