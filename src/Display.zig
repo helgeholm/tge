@@ -130,9 +130,9 @@ pub fn putImage(self: *@This(), image: *const Image, x: isize, y: isize) void {
                 if (image.data[spos] >= 32)
                     self.data[tpos] = image.data[spos];
                 self.color[tpos] = image.color[spos];
+                if (image.background[spos] != .transparent)
+                    self.background[tpos] = image.background[spos];
             }
-            if (image.background[spos] != .transparent)
-                self.background[tpos] = image.background[spos];
         }
     }
 }

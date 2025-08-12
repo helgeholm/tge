@@ -112,6 +112,7 @@ fn drawLife(self: @This(), display: *tge.Display) void {
         const y: isize = @intCast(uy);
         display.text(6, y, ":::::", .hi_red);
     }
+    display.backgroundArea(6, @intCast(bottom - fullRows), 5, @intCast(fullRows), .red);
     if (@mod(life, 2) == 1)
         display.text(6, @as(isize, @intCast(bottom - fullRows - 1)), ".....", .hi_red);
     if (life < 10) {
