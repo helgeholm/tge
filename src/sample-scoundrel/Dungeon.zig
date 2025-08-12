@@ -4,7 +4,7 @@ const tge = @import("tge");
 const Card = @import("Card.zig");
 const MainBus = @import("MainBus.zig");
 
-const top: isize = 13;
+const top: isize = 14;
 const left: isize = 6;
 
 bus: MainBus,

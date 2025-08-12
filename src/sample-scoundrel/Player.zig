@@ -92,12 +92,12 @@ fn drawWeapon(self: @This(), display: *tge.Display) void {
             bx += 1;
             b.drawDead(bx, top, display, i < self.bodies.items.len - 1);
         }
-        display.text(left + 2, top + 9, "[SPACE]", .hi_white);
+        display.text(left + 1, top + 8, "[SPACE]", .hi_white);
         if (self.readied) {
-            display.text(left + 2, top + 10, "Sheathe", .white);
+            display.text(left + 1, top + 9, "Sheathe", .white);
         } else {
-            display.putImage(&self.sheath, left + 1, top + 2);
-            display.text(left + 3, top + 10, "Draw", .white);
+            display.putImage(&self.sheath, left, top + 1);
+            display.text(left + 2, top + 9, "Draw", .white);
         }
     } else {
         display.putImage(&self.noWeapon, left, top);

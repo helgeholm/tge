@@ -11,7 +11,7 @@ hasSkipped: bool = false,
 hasDeclaredWin: bool = false,
 
 const roomActionKeys: [4]u8 = .{ 'q', 'w', 'e', 'r' };
-const top: isize = 15;
+const top: isize = 16;
 const left: isize = 24;
 
 pub fn init(_: *@This()) void {}
@@ -114,9 +114,9 @@ pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
                 .spade, .club => " Fight",
                 .diamond => " Wield",
             };
-            display.text(x + 2, top + 10, action, .white);
-            display.text(x + 4, top + 9, "[ ]", .hi_white);
-            display.put(x + 5, top + 9, roomActionKeys[i] - 32, .hi_white);
+            display.text(x + 1, top + 9, action, .white);
+            display.text(x + 3, top + 8, "[ ]", .hi_white);
+            display.put(x + 4, top + 8, roomActionKeys[i] - 32, .hi_white);
         }
     }
 }
