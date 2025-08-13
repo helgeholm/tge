@@ -2,22 +2,22 @@
     .content =
     \\............
     \\.         \.
-    \\.  S C O   \
-    \\.          |
-    \\.  U N D   |
-    \\.          |
-    \\.  R E L   |
+    \\.  -----   \
+    \\.   ---    |
+    \\. DUNGEON  |
+    \\.   ---    |
+    \\.  -----   |
     \\.          |
     \\.\________\|
     ,
     .color =
     \\            
     \\ yyyyyyyyy. 
+    \\ wwwwwwwww..
+    \\ wwwwwwwww..
     \\ yyyyyyyyy..
-    \\ yyyyyyyyy..
-    \\ yyyyyyyyy..
-    \\ yyyyyyyyy..
-    \\ yyyyyyyyy..
+    \\ wwwwwwwww..
+    \\ wwwwwwwww..
     \\ yyyyyyyyy..
     \\ ...........
     ,

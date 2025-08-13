@@ -5,7 +5,7 @@ const Card = @import("Card.zig");
 const MainBus = @import("MainBus.zig");
 
 const top: isize = 14;
-const left: isize = 6;
+const left: isize = 1;
 
 bus: MainBus,
 pile: std.ArrayList(*Card) = undefined,
@@ -15,19 +15,18 @@ imgSmall: tge.Image = .{ .source = @import("images/deck_small.zon") },
 
 pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
-    const image =
-        if (self.pile.items.len > 30)
-            self.imgFull
-        else if (self.pile.items.len > 2)
-            self.imgMedium
-        else
-            self.imgSmall;
-    if (self.pile.items.len > 0)
-        display.putImage(&image, left, top);
     var buf: [15]u8 = undefined;
-    const txt = std.fmt.bufPrint(&buf, "{d} ", .{self.pile.items.len}) catch undefined;
-    display.put(3, 22, txt[0], .hi_white);
-    display.put(3, 23, txt[1], .hi_white);
+    const txt = std.fmt.bufPrint(&buf, "{d:2}", .{self.pile.items.len}) catch undefined;
+    if (self.pile.items.len > 30) {
+        display.putImage(&self.imgFull, left, top);
+        display.text(left + 7, top + 6, txt, .black);
+    } else if (self.pile.items.len > 2) {
+        display.putImage(&self.imgMedium, left, top);
+        display.text(left + 8, top + 7, txt, .black);
+    } else if (self.pile.items.len > 0) {
+        display.putImage(&self.imgSmall, left, top);
+        display.text(left + 9, top + 8, txt, .black);
+    }
 }
 
 pub fn init(self: *@This()) void {

@@ -10,9 +10,9 @@ hasDrunk: bool = false,
 hasSkipped: bool = false,
 hasDeclaredWin: bool = false,
 
-const roomActionKeys: [4]u8 = .{ 'q', 'w', 'e', 'r' };
+const roomActionKeys: []const u8 = "1234";
 const top: isize = 16;
-const left: isize = 24;
+const left: isize = 14;
 
 pub fn init(_: *@This()) void {}
 pub fn deinit(_: *@This()) void {}
@@ -104,7 +104,7 @@ fn cardsRemaining(self: @This()) u3 {
 
 pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
-    const gap = 15;
+    const gap = 10;
     for (0..4) |i| {
         if (self.cards[i]) |c| {
             const x = left + @as(isize, @intCast(i)) * gap;
@@ -116,7 +116,7 @@ pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
             };
             display.text(x + 1, top + 9, action, .white);
             display.text(x + 3, top + 8, "[ ]", .hi_white);
-            display.put(x + 4, top + 8, roomActionKeys[i] - 32, .hi_white);
+            display.put(x + 4, top + 8, roomActionKeys[i], .hi_white);
         }
     }
 }
