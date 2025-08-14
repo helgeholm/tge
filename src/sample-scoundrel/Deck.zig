@@ -4,7 +4,9 @@ const Card = @import("Card.zig");
 
 const MainBus = @import("MainBus.zig");
 pub fn init(self: *@This()) void {
-    for (&self.cards) |*c| {
+    for (0..self.cards.len) |i| {
+        var c = &self.cards[i];
+        self.cardsDrawOrder[i] = c;
         c.image.init(self.bus.alloc);
     }
 }
@@ -18,13 +20,54 @@ pub fn deinit(self: *@This()) void {
 pub fn tick(ptr: *anyopaque, _: *[256]bool) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
     for (&self.cards) |*c| {
-        if (c.anim == 0)
-            c.anim = self.bus.rng.intRangeLessThanBiased(u16, 60, 600);
-        c.anim -= 1;
+        c.tick(self.bus.rng);
     }
 }
 
+pub fn reset(self: *@This()) void {
+    for (&self.cards) |*c| {
+        c.x = -100;
+        c.y = -100;
+        c.z = -100;
+        c.visibleState = .alive;
+        c.moveAnim = 0;
+    }
+    self.discardCount = 0;
+}
+
+fn cardLessThan(_: void, a: *Card, b: *Card) bool {
+    return a.z < b.z;
+}
+
+pub fn drawHighZ(self: *@This(), display: *tge.Display) void {
+    for (&self.cardsDrawOrder) |c| {
+        if (c.z >= 1000)
+            c.draw(display);
+    }
+}
+
+pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
+    const self: *@This() = @ptrCast(@alignCast(ptr));
+    std.sort.insertion(*Card, &self.cardsDrawOrder, {}, cardLessThan);
+    for (&self.cardsDrawOrder) |c| {
+        if (c.z < 1000)
+            c.draw(display);
+    }
+}
+
+pub fn discard(self: *@This(), card: *Card) void {
+    card.visibleState = .dead;
+    card.moveTo(
+        self.bus.rng.intRangeLessThan(isize, 0, 54 - card.image.width),
+        self.bus.rng.intRangeLessThan(isize, 0, 9 - card.image.height),
+        self.discardCount,
+    );
+    self.discardCount += 1;
+}
+
 bus: MainBus,
+discardCount: isize = 0,
+cardsDrawOrder: [44]*Card = undefined,
 cards: [44]Card = .{
     .{
         .suit = .club,

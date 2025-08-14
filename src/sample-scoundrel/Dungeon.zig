@@ -17,16 +17,52 @@ pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
     var buf: [15]u8 = undefined;
     const txt = std.fmt.bufPrint(&buf, "{d:2}", .{self.pile.items.len}) catch undefined;
-    if (self.pile.items.len > 30) {
-        display.putImage(&self.imgFull, left, top);
-        display.text(left + 7, top + 6, txt, .black);
-    } else if (self.pile.items.len > 2) {
-        display.putImage(&self.imgMedium, left, top);
-        display.text(left + 8, top + 7, txt, .black);
-    } else if (self.pile.items.len > 0) {
-        display.putImage(&self.imgSmall, left, top);
-        display.text(left + 9, top + 8, txt, .black);
+    display.putImage(switch (self.visibleState()) {
+        .full => &self.imgFull,
+        .medium => &self.imgMedium,
+        .small => &self.imgSmall,
+    }, left, top);
+    display.text(self.shiftXY(left + 7), self.shiftXY(top + 6), txt, .black);
+    self.bus.drawHighZCards(display);
+}
+
+pub fn bottomX() isize {
+    return left + 2;
+}
+
+pub fn bottomY() isize {
+    return top + 2;
+}
+
+pub fn bottomZ() isize {
+    return 500;
+}
+
+fn visibleState(self: @This()) enum { full, medium, small } {
+    if (self.pile.items.len > 30)
+        return .full
+    else if (self.pile.items.len > 2)
+        return .medium
+    else
+        return .small;
+}
+
+fn shiftXY(self: @This(), xy: isize) isize {
+    return switch (self.visibleState()) {
+        .full => xy,
+        .medium => xy + 1,
+        .small => xy + 2,
+    };
+}
+
+pub fn drawFromTop(self: *@This()) ?*Card {
+    if (self.pile.pop()) |c| {
+        c.x = self.shiftXY(left);
+        c.y = self.shiftXY(top);
+        c.z = 1000;
+        return c;
     }
+    return null;
 }
 
 pub fn init(self: *@This()) void {

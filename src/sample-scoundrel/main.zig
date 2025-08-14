@@ -8,7 +8,6 @@ const Card = @import("Card.zig");
 const Dungeon = @import("Dungeon.zig");
 const Room = @import("Room.zig");
 const Player = @import("Player.zig");
-const Discards = @import("Discards.zig");
 const Overlay = @import("Overlay.zig");
 const MainBus = @import("MainBus.zig");
 
@@ -18,7 +17,6 @@ const Game = struct {
     dungeon: Dungeon = undefined,
     room: Room = undefined,
     player: Player = undefined,
-    discards: Discards = undefined,
     overlay: Overlay = undefined,
     pub fn init(self: *Game, bus: MainBus) void {
         inline for (@typeInfo(Game).@"struct".fields) |field| {
@@ -54,12 +52,11 @@ pub fn main() !void {
     }
     game.init(bus);
     defer game.deinit();
-    t.addAsObject(&game.deck);
     t.addAsObject(&game.background);
-    t.addAsObject(&game.discards);
+    t.addAsObject(&game.deck);
+    t.addAsObject(&game.player);
     t.addAsObject(&game.dungeon);
     t.addAsObject(&game.room);
-    t.addAsObject(&game.player);
     t.addAsObject(&game.overlay);
     bus.startNewGame();
     try t.run();
@@ -77,12 +74,17 @@ fn getCards(ptr: *anyopaque) []Card {
 
 fn discard(ptr: *anyopaque, card: *Card) void {
     const game: *Game = @ptrCast(@alignCast(ptr));
-    game.discards.discard(card);
+    game.deck.discard(card);
 }
 
 fn isBlockedByModal(ptr: *anyopaque) bool {
     const game: *Game = @ptrCast(@alignCast(ptr));
     return game.overlay.isHelping or game.overlay.isLosing or game.overlay.isWinning;
+}
+
+fn drawHighZCards(ptr: *anyopaque, display: *tge.Display) void {
+    const game: *Game = @ptrCast(@alignCast(ptr));
+    game.deck.drawHighZ(display);
 }
 
 fn setLost(ptr: *anyopaque) void {
@@ -121,18 +123,19 @@ fn heal(ptr: *anyopaque, amount: i6) void {
 
 fn drawFromDungeon(ptr: *anyopaque) ?*Card {
     const game: *Game = @ptrCast(@alignCast(ptr));
-    return game.dungeon.pile.pop();
+    return game.dungeon.drawFromTop();
 }
 
 fn putAtBottomOfDungeon(ptr: *anyopaque, card: *Card) void {
     const game: *Game = @ptrCast(@alignCast(ptr));
     game.dungeon.pile.insertAssumeCapacity(0, card);
+    card.moveTo(Dungeon.bottomX(), Dungeon.bottomY(), Dungeon.bottomZ());
 }
 
 fn startNewGame(ptr: *anyopaque) void {
     const game: *Game = @ptrCast(@alignCast(ptr));
+    game.deck.reset();
     game.player.reset();
-    game.discards.reset();
     game.dungeon.reset();
     game.room.reset();
     game.overlay.isWinning = false;

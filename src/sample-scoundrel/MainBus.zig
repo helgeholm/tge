@@ -1,4 +1,5 @@
 const std = @import("std");
+const tge = @import("tge");
 const Card = @import("Card.zig");
 const MainBus = @This();
 
@@ -22,6 +23,7 @@ const VTable = struct {
     fight: *const fn (*anyopaque, *Card) bool = undefined,
     heal: *const fn (*anyopaque, i6) void = undefined,
     drawFromDungeon: *const fn (*anyopaque) ?*Card = undefined,
+    drawHighZCards: *const fn (*anyopaque, *tge.Display) void = undefined,
     putAtBottomOfDungeon: *const fn (*anyopaque, *Card) void = undefined,
 };
 
@@ -43,6 +45,10 @@ pub fn isBlockedByModal(self: MainBus) bool {
 
 pub fn setLost(self: MainBus) void {
     self.vtable.setLost(self.ptr);
+}
+
+pub fn drawHighZCards(self: MainBus, display: *tge.Display) void {
+    self.vtable.drawHighZCards(self.ptr, display);
 }
 
 pub fn setWon(self: MainBus) void {

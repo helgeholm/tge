@@ -13,14 +13,18 @@ hasDeclaredWin: bool = false,
 const roomActionKeys: []const u8 = "1234";
 const top: isize = 9;
 const left: isize = 14;
+const gap: isize = 10;
 
 pub fn init(_: *@This()) void {}
 pub fn deinit(_: *@This()) void {}
 
 pub fn pull(self: *@This()) void {
     for (0..4) |i| {
-        if (self.cards[i] == null)
+        if (self.cards[i] == null) {
             self.cards[i] = self.bus.drawFromDungeon();
+            self.cards[i].?.moveTo(left + @as(isize, @intCast(i)) * gap, top, 0);
+            self.cards[i].?.moveDelay = i * 10;
+        }
     }
     self.hasDrunk = false;
 }
@@ -104,11 +108,9 @@ fn cardsRemaining(self: @This()) u3 {
 
 pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
-    const gap = 10;
     for (0..4) |i| {
         if (self.cards[i]) |c| {
             const x = left + @as(isize, @intCast(i)) * gap;
-            c.draw(x, top, display);
             const action = switch (c.suit) {
                 .heart => if (self.hasDrunk) "Discard" else " Drink",
                 .spade, .club => " Fight",

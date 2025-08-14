@@ -92,6 +92,7 @@ pub inline fn put(self: *@This(), x: isize, y: isize, c: u8, color: Image.Color)
 }
 
 pub inline fn backgroundArea(self: *@This(), x: isize, y: isize, width: isize, height: isize, color: Image.Color) void {
+    if (x + width < 1 or y + height < 1) return;
     const lx: usize = @intCast(@max(0, x));
     const ly: usize = @intCast(@max(0, y));
     const hx: usize = @intCast(@min(self.width, x + width));
@@ -105,6 +106,7 @@ pub inline fn backgroundArea(self: *@This(), x: isize, y: isize, width: isize, h
 }
 
 pub inline fn colorArea(self: *@This(), x: isize, y: isize, width: isize, height: isize, color: Image.Color) void {
+    if (x + width < 1 or y + height < 1) return;
     const lx: usize = @intCast(@max(0, x));
     const ly: usize = @intCast(@max(0, y));
     const hx: usize = @intCast(@min(self.width, x + width));
