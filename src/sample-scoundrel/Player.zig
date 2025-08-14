@@ -11,6 +11,7 @@ readied: bool = true,
 bodies: std.ArrayList(*Card) = undefined,
 noWeapon: tge.Image = .{ .source = @import("images/no_weapon.zon") },
 sheath: tge.Image = .{ .source = @import("images/not_drawn_weapon.zon") },
+anim: usize = 0,
 
 pub fn init(self: *@This()) void {
     self.sheath.init(self.bus.alloc);
@@ -79,6 +80,7 @@ pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
     if (keys[' ']) {
         self.readied = !self.readied;
     }
+    self.anim +%= 1;
 }
 
 fn drawWeapon(self: @This(), display: *tge.Display) void {
@@ -108,14 +110,18 @@ fn drawLife(self: @This(), display: *tge.Display) void {
     const life: u8 = if (self.life < 0) 0 else @intCast(self.life);
     const bottom: usize = 30;
     const left: usize = 1;
+    const animSpeed: usize = 5 + life;
+    const anim: usize = @divFloor(self.anim, animSpeed);
+    const bubblesIn: [4][]const u8 = .{ "O", "o ", " o", ". " };
+    const bubblesTop: [3][]const u8 = .{ " .", ".:", ": " };
     const fullRows: usize = @intCast(@divFloor(life, 2));
     for (bottom - fullRows..bottom) |uy| {
         const y: isize = @intCast(uy);
-        display.text(left + 1, y, "::", .hi_red);
+        display.text(left + 1, y, bubblesIn[@mod(uy + anim, 4)], .hi_red);
     }
     display.backgroundArea(left + 1, @intCast(bottom - fullRows), 2, @intCast(fullRows), .red);
     if (@mod(life, 2) > 0)
-        display.text(left + 1, @as(isize, @intCast(bottom - fullRows - 1)), "..", .hi_red);
+        display.text(left + 1, @as(isize, @intCast(bottom - fullRows - 1)), bubblesTop[@mod(anim, 3)], .hi_red);
     var wbuf: [2]u8 = .{ ' ', ' ' };
     _ = std.fmt.bufPrint(&wbuf, "{d}", .{life}) catch unreachable;
     display.put(left, bottom - 5, wbuf[0], .black);
