@@ -53,9 +53,9 @@ pub fn draw(ptr: *anyopaque, display: *tge.Display) void {
         }
     }
     if (self.isHelping)
-        display.putImage(&self.help, 7, 2);
+        display.putImage(&self.help, 0, 0);
     if (self.isWinning)
-        display.putImage(&self.win, 39, 19);
+        display.putImage(&self.win, 15, 8);
     if (self.isLosing)
-        display.putImage(&self.dead, 40, 18);
+        display.putImage(&self.dead, 15, 8);
 }

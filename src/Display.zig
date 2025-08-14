@@ -209,6 +209,10 @@ pub fn draw(self: *@This()) void {
             stdout.writeByte(self.data[pos]) catch unreachable;
             pos += 1;
         }
+        color = .white;
+        background = .black;
+        stdout.writeAll(fgColor(color)) catch unreachable;
+        stdout.writeAll(bgColor(background)) catch unreachable;
         stdout.writeAll("\x1b[0K\n") catch unreachable;
     }
     stdout.writeAll("\x1b[0J") catch unreachable;

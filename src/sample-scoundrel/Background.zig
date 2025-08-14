@@ -5,7 +5,7 @@ const Display = tge.Display;
 const MainBus = @import("MainBus.zig");
 
 bus: MainBus,
-messageSlice: [11][]const u8 = .{ "", "", "", "", "", "", "", "", "", "", "" },
+messageSlice: [10][]const u8 = .{ "", "", "", "", "", "", "", "", "", "" },
 messageNewTTL: usize = 0,
 board: tge.Image = .{ .source = @import("images/board.zon") },
 
@@ -18,10 +18,12 @@ pub fn deinit(self: *@This()) void {
 }
 
 pub fn message(self: *@This(), fmted: []const u8) void {
-    for (0..10) |i| {
+    if (fmted.len > "You replace your weapon (6)".len)
+        @panic(fmted);
+    for (0..9) |i| {
         self.messageSlice[i] = self.messageSlice[i + 1];
     }
-    self.messageSlice[10] = fmted;
+    self.messageSlice[9] = fmted;
     self.messageNewTTL = 59;
 }
 
@@ -34,12 +36,12 @@ pub fn tick(ptr: *anyopaque, _: *[256]bool) void {
 pub fn draw(ptr: *anyopaque, display: *Display) void {
     const self: *@This() = @ptrCast(@alignCast(ptr));
     display.putImage(&self.board, 0, 0);
-    const msgTop: isize = 28;
-    const msgLeft: isize = 46;
-    for (0..10) |ui| {
+    const msgTop: isize = 20;
+    const msgLeft: isize = 26;
+    for (0..9) |ui| {
         const i: isize = @intCast(ui);
         display.text(msgLeft, msgTop + i, self.messageSlice[ui], .white);
     }
     if (@mod(self.messageNewTTL, 20) < 15)
-        display.text(msgLeft, msgTop + 10, self.messageSlice[10], .hi_white);
+        display.text(msgLeft, msgTop + 9, self.messageSlice[9], .hi_white);
 }

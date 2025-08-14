@@ -6,8 +6,8 @@ const MainBus = @import("MainBus.zig");
 
 const top: isize = 0;
 const left: isize = 0;
-const height: isize = 18;
-const width: isize = 100;
+const height: isize = 9;
+const width: isize = 54;
 
 const DiscardedCard = struct {
     card: *Card,

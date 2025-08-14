@@ -11,7 +11,7 @@ hasSkipped: bool = false,
 hasDeclaredWin: bool = false,
 
 const roomActionKeys: []const u8 = "1234";
-const top: isize = 16;
+const top: isize = 9;
 const left: isize = 14;
 
 pub fn init(_: *@This()) void {}
@@ -49,7 +49,7 @@ pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
                 },
                 .heart => {
                     if (self.hasDrunk)
-                        self.bus.message("You discard a health potion ({d})", .{c.strength})
+                        self.bus.message("Potion ({d}) discarded", .{c.strength})
                     else
                         self.bus.heal(c.strength);
 
@@ -70,7 +70,7 @@ pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
     }
     if (keys['s']) {
         if (self.hasSkipped) {
-            self.bus.message("Can't skip two rooms in a row!", .{});
+            self.bus.message("Can't skip twice in a row!", .{});
         } else if (self.cardsRemaining() < 4) {
             self.bus.message("Can only skip full rooms!", .{});
         } else {
@@ -83,11 +83,11 @@ pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
                 }
             }
             self.pull();
-            self.bus.message("You skip to a new room", .{});
+            self.bus.message("Skipped to a new room", .{});
         }
     }
     if (self.cardsRemaining() == 0 and !self.hasDeclaredWin) {
-        self.bus.message("You have cleared the dungeon!", .{});
+        self.bus.message("Dungeon cleared!", .{});
         self.bus.setWon();
         self.hasDeclaredWin = true;
     }

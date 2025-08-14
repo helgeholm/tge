@@ -1,76 +1,98 @@
 .{
     .content =
-    \\::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    \\:: SCOUNDREL is a solitaire card game by Zach Gage and Kurt Bieg (2011)             ::
-    \\::                                                                                  ::
-    \\:: It is played with a standard 52 card deck excluding Aces and face cards,         ::
-    \\:: resulting in 44 cards.  These cards are the DUNGEON that you must clear ROOM by  ::
-    \\:: ROOM by fighting all the MONSTERS (clubs and spades), grabbing all the WEAPONS   ::
-    \\:: (diamonds), and drinking all the HEALTH potions (hearts).                        ::
-    \\::                                                                                  ::
-    \\:: You start the game with 20 HEALTH and a shuffled DUNGEON.                        ::
-    \\::                                                                                  ::
-    \\:: Each ROOM consists of a row of 4 cards drawn from the top of the DUNGEON deck,   ::
-    \\:: and you must remove 3 cards to move on to the next ROOM, at which point 3 new    ::
-    \\:: cards are drawn from the DUNGEON deck and placed next to the remaining card.     ::
-    \\::                                                                                  ::
-    \\:: CLUB and SPADE cards are MONSTERS.  By fighting them you lose HEALTH equal to    ::
-    \\:: their value, where J=11, Q=12, K=13 and A=14, and discard the MONSTER.  You      ::
-    \\:: may fight the monster bare-handed, or with a WEAPON.                             ::
-    \\::                                                                                  ::
-    \\:: DIAMOND cards are WEAPONS.  You may have at most one WEAPON at any time, and     ::
-    \\:: wielding a new one will discard the current WEAPON.  Your WEAPON reduces the     ::
-    \\:: damage you take from fighting MONSTERS, by the WEAPON's value.  Once a weapon    ::
-    \\:: has been used to fight a MONSTER, it may only be used to fight monsters with     ::
-    \\:: value below the previous monster.                                                ::
-    \\::                                                                                  ::
-    \\:: HEART cards are HEALTH potions, and drinking one will restore your health by the ::
-    \\:: card's value, maxed at 20 HEALTH.  Drinking more than one HEALTH potion in the   ::
-    \\:: same ROOM will discard the potion for no effect.                                 ::
-    \\::                                                                                  ::
-    \\:: You may FLEE a room, in which all cards in the room are shuffled and put at the  ::
-    \\:: bottom of the DUNGEON.  You may not flee two rooms in a row.                     ::
-    \\::                                                                                  ::
-    \\:: You die when your health reaches 0.                                              ::
-    \\:: You win when both the DUNGEON and the last ROOM are empty!                       ::
-    \\::                                                      Press [K] to return to game ::
-    \\::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    \\::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    \\::            . * ~ ~ SCOUNDREL ~ ~ * .             ::
+    \\:: A dungeon-crawling roguelike solitaire card game ::
+    \\::                                                  ::
+    \\:: Designed by Zach Gage and Kurt Bieg (2011)       ::
+    \\:: http://stfj.net/art/2011/Scoundrel.pdf           ::
+    \\::                                                  ::
+    \\:: Clear the dungeon (deck) room by room by         ::
+    \\:: fighting monsters (clubs and spades), picking up ::
+    \\:: weapons (diamonds), and drinking health potions  ::
+    \\:: (hearts).                                        ::
+    \\::                                                  ::
+    \\:: Fighting monsters damages you for their strength ::
+    \\:: minus your weapon strength, and you may only     ::
+    \\:: attack weaker monsters every time until you have ::
+    \\:: replaced your weapon. Fighting with your weapon  ::
+    \\:: sheathed is always possible, for full damage.    ::
+    \\::                                                  ::
+    \\:: Each room must have 3 of the 4 cards cleared in  ::
+    \\:: order to proceed. You may skip 1 room in a row,  ::
+    \\:: in which case all 4 cards are shuffled to the    ::
+    \\:: bottom of the dungeon, and a new room is drawn.  ::
+    \\::                                                  ::
+    \\:: If the dungeon is empty and all cards in the     ::
+    \\:: current room are discarded or have been picked   ::
+    \\:: up, you win!                                     ::
+    \\::                                                  ::
+    \\:: Digital version by Helge Holm <helge@plyply.no>  ::
+    \\::                                        [K] Close ::
+    \\::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    ,
+    .color =
+    \\KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
+    \\KKyyyyyyyyyyyyyyyyyyyGGGGGGGGGGGyyyyyyyyyyyyyyyyyyyyKK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK..................................................KK
+    \\KK........................................wwww......KK
+    \\KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
     ,
     .background =
-    \\KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkKK
-    \\KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
     ,
 }

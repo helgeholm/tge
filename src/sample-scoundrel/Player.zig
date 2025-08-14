@@ -33,10 +33,10 @@ pub fn deinit(self: *@This()) void {
 
 pub fn grabWeapon(self: *@This(), card: *Card) void {
     if (self.weapon) |w| {
-        self.bus.message("You replace your weapon ({d}) with a new ({d})", .{ w.strength, card.strength });
+        self.bus.message("Weapon ({d}) replaced ({d})", .{ w.strength, card.strength });
         self.bus.discard(w);
     } else {
-        self.bus.message("You grab a weapon ({d})", .{card.strength});
+        self.bus.message("Got weapon ({d})", .{card.strength});
     }
     self.weapon = card;
     self.readied = true;
@@ -56,7 +56,7 @@ pub fn fight(self: *@This(), card: *Card) bool {
         const w = self.weapon.?;
         if (self.bodies.getLastOrNull()) |b| {
             if (card.strength >= b.strength) {
-                self.bus.message("Weapon cannot fight enemies {d} or above!", .{b.strength});
+                self.bus.message("Weapon is too weakened ({d})", .{b.strength});
                 return false;
             }
         }
@@ -82,11 +82,11 @@ pub fn tick(ptr: *anyopaque, keys: *[256]bool) void {
 }
 
 fn drawWeapon(self: @This(), display: *tge.Display) void {
-    const left = 17;
-    const top = 29;
+    const left = 6;
+    const top = 20;
     if (self.weapon) |w| {
         w.draw(left, top, display);
-        var bx: isize = left + 4;
+        var bx: isize = left + 1;
         for (0..self.bodies.items.len) |i| {
             const b = self.bodies.items[i];
             bx += 1;
@@ -106,21 +106,20 @@ fn drawWeapon(self: @This(), display: *tge.Display) void {
 
 fn drawLife(self: @This(), display: *tge.Display) void {
     const life: u8 = if (self.life < 0) 0 else @intCast(self.life);
-    const bottom: usize = 39;
+    const bottom: usize = 30;
+    const left: usize = 1;
     const fullRows: usize = @intCast(@divFloor(life, 2));
     for (bottom - fullRows..bottom) |uy| {
         const y: isize = @intCast(uy);
-        display.text(6, y, ":::::", .hi_red);
+        display.text(left + 1, y, "::", .hi_red);
     }
-    display.backgroundArea(6, @intCast(bottom - fullRows), 5, @intCast(fullRows), .red);
-    if (@mod(life, 2) == 1)
-        display.text(6, @as(isize, @intCast(bottom - fullRows - 1)), ".....", .hi_red);
-    if (life < 10) {
-        display.put(3, 34, '0' + life, .hi_white);
-    } else {
-        display.put(3, 34, '0' + @divFloor(life, 10), .hi_white);
-        display.put(3, 35, '0' + @mod(life, 10), .hi_white);
-    }
+    display.backgroundArea(left + 1, @intCast(bottom - fullRows), 2, @intCast(fullRows), .red);
+    if (@mod(life, 2) > 0)
+        display.text(left + 1, @as(isize, @intCast(bottom - fullRows - 1)), "..", .hi_red);
+    var wbuf: [2]u8 = .{ ' ', ' ' };
+    _ = std.fmt.bufPrint(&wbuf, "{d}", .{life}) catch unreachable;
+    display.put(left, bottom - 5, wbuf[0], .black);
+    display.put(left, bottom - 4, wbuf[1], .black);
 }
 
 pub fn draw(ptr: *anyopaque, display: *tge.Display) void {

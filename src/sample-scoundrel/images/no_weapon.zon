@@ -1,20 +1,20 @@
 .{
     .content =
-    \\X        
-    \\         
-    \\         
-    \\         
-    \\         
-    \\         
-    \\        X
+    \\X UNARMED
+    \\   / \   
+    \\  /   \  
+    \\  \   /  
+    \\   \ /   
+    \\    T    
+    \\UNARMED X
     ,
     .color =
     \\k........
-    \\.........
-    \\.........
-    \\.........
-    \\.........
-    \\.........
+    \\kkkkkkkkk
+    \\kkkkkkkkk
+    \\kkkkkkkkk
+    \\kkkkkkkkk
+    \\kkkkkkkkk
     \\........k
     ,
     .background =

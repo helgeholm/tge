@@ -39,7 +39,7 @@ pub fn main() !void {
         std.log.err("Memory leak detected on exit", .{});
 
     var random = std.Random.Pcg.init(@bitCast(std.time.milliTimestamp()));
-    const config = Config{ .width = 100, .height = 40 };
+    const config = Config{ .width = 54, .height = 30 };
     var t = try tge.singleton.init(gpa.allocator(), config);
     defer t.deinit();
 
@@ -87,8 +87,10 @@ fn isBlockedByModal(ptr: *anyopaque) bool {
 
 fn setLost(ptr: *anyopaque) void {
     const game: *Game = @ptrCast(@alignCast(ptr));
-    if (!game.overlay.isWinning)
+    if (!game.overlay.isWinning) {
         game.overlay.isLosing = true;
+        game.background.message("Game lost");
+    }
 }
 
 fn setWon(ptr: *anyopaque) void {
@@ -135,5 +137,5 @@ fn startNewGame(ptr: *anyopaque) void {
     game.room.reset();
     game.overlay.isWinning = false;
     game.overlay.isLosing = false;
-    game.background.message("New game started!");
+    game.background.message("Entering new dungeon");
 }
