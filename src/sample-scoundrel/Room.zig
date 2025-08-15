@@ -22,8 +22,10 @@ pub fn pull(self: *@This()) void {
     for (0..4) |i| {
         if (self.cards[i] == null) {
             self.cards[i] = self.bus.drawFromDungeon();
-            self.cards[i].?.moveTo(left + @as(isize, @intCast(i)) * gap, top, 0);
-            self.cards[i].?.moveDelay = i * 10;
+            if (self.cards[i]) |c| {
+                c.moveTo(left + @as(isize, @intCast(i)) * gap, top, 0);
+                c.moveDelay = i * 10;
+            }
         }
     }
     self.hasDrunk = false;

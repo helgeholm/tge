@@ -115,9 +115,9 @@ fn drawLife(self: @This(), display: *tge.Display) void {
     const fullRows: usize = @intCast(@divFloor(life, 2));
     for (bottom - fullRows..bottom) |uy| {
         const y: isize = @intCast(uy);
-        display.text(lifeX + 1, y, bubblesIn[@mod(uy + anim, 4)], .hi_red);
+        display.text(lifeX + 1, y, bubblesIn[@mod(uy + anim, 4)], .red);
     }
-    display.backgroundArea(lifeX + 1, @intCast(bottom - fullRows), 2, @intCast(fullRows), .red);
+    display.backgroundArea(lifeX + 1, @intCast(bottom - fullRows), 2, @intCast(fullRows), .hi_red);
     if (@mod(life, 2) > 0)
         display.text(lifeX + 1, @as(isize, @intCast(bottom - fullRows - 1)), bubblesTop[@mod(anim, 3)], .hi_red);
     var wbuf: [2]u8 = .{ ' ', ' ' };

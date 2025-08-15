@@ -197,9 +197,12 @@ pub fn draw(self: *@This()) void {
     var color: Image.Color = .white;
     var background: Image.Color = .black;
     var pos: usize = 0;
+    var firstLine = true;
     stdout.writeAll(fgColor(color)) catch unreachable;
     stdout.writeAll(bgColor(background)) catch unreachable;
     while (pos < self.data.len) {
+        if (!firstLine) stdout.writeAll("\n") catch unreachable;
+        firstLine = false;
         const endLine = pos + @as(usize, @intCast(self.width));
         while (pos < endLine) {
             if (self.color[pos] != color or self.background[pos] != background) {
@@ -215,7 +218,7 @@ pub fn draw(self: *@This()) void {
         background = .black;
         stdout.writeAll(fgColor(color)) catch unreachable;
         stdout.writeAll(bgColor(background)) catch unreachable;
-        stdout.writeAll("\x1b[0K\n") catch unreachable;
+        stdout.writeAll("\x1b[0K") catch unreachable;
     }
     stdout.writeAll("\x1b[0J") catch unreachable;
 }
