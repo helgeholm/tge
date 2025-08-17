@@ -1,98 +1,92 @@
 .{
     .content =
-    \\::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    \\::            . * ~ ~ SCOUNDREL ~ ~ * .             ::
-    \\:: A dungeon-crawling roguelike solitaire card game ::
-    \\::                                                  ::
-    \\:: Designed by Zach Gage and Kurt Bieg (2011)       ::
-    \\:: http://stfj.net/art/2011/Scoundrel.pdf           ::
-    \\::                                                  ::
-    \\:: Clear the dungeon (deck) room by room by         ::
-    \\:: fighting monsters (clubs and spades), picking up ::
-    \\:: weapons (diamonds), and drinking health potions  ::
-    \\:: (hearts).                                        ::
-    \\::                                                  ::
-    \\:: Fighting monsters damages you for their strength ::
-    \\:: minus your weapon strength, and you may only     ::
-    \\:: attack weaker monsters every time until you have ::
-    \\:: replaced your weapon. Fighting with your weapon  ::
-    \\:: sheathed is always possible, for full damage.    ::
-    \\::                                                  ::
-    \\:: Each room must have 3 of the 4 cards cleared in  ::
-    \\:: order to proceed. You may skip 1 room in a row,  ::
-    \\:: in which case all 4 cards are shuffled to the    ::
-    \\:: bottom of the dungeon, and a new room is drawn.  ::
-    \\::                                                  ::
-    \\:: If the dungeon is empty and all cards in the     ::
-    \\:: current room are discarded or have been picked   ::
-    \\:: up, you win!                                     ::
-    \\::                                                  ::
-    \\:: Digital version by Helge Holm <helge@plyply.no>  ::
-    \\::                                        [K] Close ::
-    \\::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    \\            . * ~ ~ SCOUNDREL ~ ~ * .             
+    \\ A dungeon-crawling roguelike solitaire card game 
+    \\                                                  
+    \\ Designed by Zach Gage and Kurt Bieg (2011)       
+    \\ http://stfj.net/art/2011/Scoundrel.pdf           
+    \\                                                  
+    \\ Clear the dungeon (deck) room by room by         
+    \\ fighting monsters (clubs and spades), picking up 
+    \\ weapons (diamonds), and drinking health potions  
+    \\ (hearts).                                        
+    \\                                                  
+    \\ Fighting monsters damages you for their strength 
+    \\ minus your weapon strength, and you may only     
+    \\ attack weaker monsters every time until you have 
+    \\ replaced your weapon. Fighting with your weapon  
+    \\ sheathed is always possible, for full damage.    
+    \\                                                  
+    \\ Each room must have 3 of the 4 cards cleared in  
+    \\ order to proceed. You may skip 1 room in a row,  
+    \\ in which case all 4 cards are shuffled to the    
+    \\ bottom of the dungeon, and a new room is drawn.  
+    \\                                                  
+    \\ If the dungeon is empty and all cards in the     
+    \\ current room are discarded or have been picked   
+    \\ up, you win!                                     
+    \\                                                  
+    \\ Digital version by Helge Holm <helge@plyply.no>  
+    \\                                        [K] Close 
     ,
     .color =
-    \\KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
-    \\KKyyyyyyyyyyyyyyyyyyyGGGGGGGGGGGyyyyyyyyyyyyyyyyyyyyKK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK..................................................KK
-    \\KK........................................wwww......KK
-    \\KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
+    \\yyyyyyyyyyyyyyyyyyyGGGGGGGGGGGyyyyyyyyyyyyyyyyyyyy
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\..................................................
+    \\........................................wwww......
     ,
     .background =
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+    \\kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
     ,
 }
